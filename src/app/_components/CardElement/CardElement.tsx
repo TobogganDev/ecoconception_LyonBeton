@@ -15,7 +15,7 @@ export default function CardElement(props: Props) {
     const currentPrice = prices?.find(p => p.isDefault && p.isActive)?.amount ?? price;
     const displayPrice = (currentPrice / 100).toFixed(2);
     return (
-        <Link className="card-element" href={`product/${identifier}`} style={{ backgroundImage: `url('https://res.cloudinary.com/ddlod4evf/image/upload/products/${identifier}_0.webp')` }}>
+        <Link className="card-element" href={`product/${identifier}`} style={{ backgroundImage: `url('https://res.cloudinary.com/ddlod4evf/image/upload/f_auto,q_auto/products/${identifier}_0.webp')` }}>
             <div className="card-element__info">
                 <h3 className="card-element__info-title">
                     {title}

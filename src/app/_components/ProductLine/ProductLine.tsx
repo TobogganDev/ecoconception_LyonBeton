@@ -42,7 +42,7 @@ export default function ProductLine({
 
   const getImageUrl = () => {
     if (!showImage || !product.imgNumber) return null;
-    return `https://res.cloudinary.com/ddlod4evf/image/upload/products/${product.identifier}_0.webp`;
+    return `https://res.cloudinary.com/ddlod4evf/image/upload/f_auto,q_auto/products/${product.identifier}_0.webp`;
   };
 
   return (
