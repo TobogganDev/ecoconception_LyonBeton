@@ -156,11 +156,7 @@ export const cartRouter = createTRPCRouter({
           }),
       );
 
-      const updated = await ctx.db.cart.findUnique({
-        where: { userId },
-        include: { items: { include: { product: true } } },
-      });
-      return updated;
+      return { ok: true };
     }),
 
   getCurrent: protectedProcedure.query(async ({ ctx }) => {
@@ -171,7 +167,7 @@ export const cartRouter = createTRPCRouter({
         items: {
           include: {
             product: {
-              include: { prices: true },
+              include: { prices: { where: { isActive: true } } },
             },
           },
         },

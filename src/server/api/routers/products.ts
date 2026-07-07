@@ -37,6 +37,7 @@ export const productsRouter = createTRPCRouter({
         where: { identifier: input.identifier },
         include: {
           prices: {
+            where: { isActive: true },
             orderBy: { isDefault: "desc" },
           },
         },

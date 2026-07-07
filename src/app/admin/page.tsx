@@ -3,8 +3,7 @@
 import { api } from "~/trpc/react";
 
 export default function AdminDashboard() {
-  const { data: users } = api.admin.getAllUsers.useQuery();
-  const { data: products } = api.admin.getAllProducts.useQuery();
+  const { data: stats } = api.admin.getStats.useQuery();
   const { data: auditLogs } = api.admin.getAuditLogs.useQuery({
     limit: 10,
     offset: 0,
@@ -16,8 +15,8 @@ export default function AdminDashboard() {
 
       <div>
         <h2>Statistiques</h2>
-        <p>Utilisateurs: {users?.length ?? 0}</p>
-        <p>Produits: {products?.length ?? 0}</p>
+        <p>Utilisateurs: {stats?.userCount ?? 0}</p>
+        <p>Produits: {stats?.productCount ?? 0}</p>
       </div>
 
       <div>

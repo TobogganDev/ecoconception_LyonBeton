@@ -55,6 +55,14 @@ async function logAuditAction(
 }
 
 export const adminRouter = createTRPCRouter({
+  getStats: adminProcedure.query(async ({ ctx }) => {
+    const [userCount, productCount] = await Promise.all([
+      ctx.db.user.count(),
+      ctx.db.product.count(),
+    ]);
+    return { userCount, productCount };
+  }),
+
   getAllUsers: adminProcedure.query(async ({ ctx }) => {
     return await ctx.db.user.findMany({
       select: {

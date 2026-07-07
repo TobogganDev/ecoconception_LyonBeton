@@ -46,11 +46,7 @@ export const ordersRouter = createTRPCRouter({
         ctx.db.order.findMany({
           where: whereClause,
           include: {
-            items: {
-              include: {
-                product: true,
-              },
-            },
+            items: true,
           },
           orderBy: { createdAt: "desc" },
           skip,
@@ -76,11 +72,7 @@ export const ordersRouter = createTRPCRouter({
           userId: ctx.session.user.id,
         },
         include: {
-          items: {
-            include: {
-              product: true,
-            },
-          },
+          items: true,
         },
       });
 
@@ -137,11 +129,7 @@ export const ordersRouter = createTRPCRouter({
         ctx.db.order.findMany({
           where: whereClause,
           include: {
-            items: {
-              include: {
-                product: true,
-              },
-            },
+            items: true,
             user: {
               select: {
                 id: true,
@@ -185,11 +173,7 @@ export const ordersRouter = createTRPCRouter({
         where: { id: input.orderId },
         data: { status: input.status },
         include: {
-          items: {
-            include: {
-              product: true,
-            },
-          },
+          items: true,
         },
       });
 
