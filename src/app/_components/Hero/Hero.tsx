@@ -20,8 +20,11 @@ interface HeroProps {
   showScrollIndicator?: boolean;
 }
 
+const DEFAULT_POSTER = "https://res.cloudinary.com/ddlod4evf/video/upload/f_jpg,q_auto:good,w_1920,h_1080,c_fill/home_vid_e6v05n.jpg";
+
 export default function Hero({
   title = "LYON BETON",
+  fallbackImage = DEFAULT_POSTER,
   navigation = [
     { label: "BOUTIQUE", href: "/products" },
     { label: "PANIER", href: "/cart" },
@@ -74,16 +77,17 @@ export default function Hero({
             muted
             loop
             playsInline
-            preload="auto"
+            preload="none"
+            poster={fallbackImage}
             data-loaded={isVideoLoaded}
           >
             <source
-              src="https://res.cloudinary.com/ddlod4evf/video/upload/f_webm,q_auto:best,vc_vp9,w_3840,h_2160,c_fill/home_vid_e6v05n.webm"
+              src="https://res.cloudinary.com/ddlod4evf/video/upload/f_webm,q_auto:good,vc_vp9,w_1920,h_1080,c_fill/home_vid_e6v05n.webm"
               type="video/webm"
             />
 
             <source
-              src="https://res.cloudinary.com/ddlod4evf/video/upload/f_mp4,q_auto:best,vc_h264,w_3840,h_2160,c_fill/home_vid_e6v05n.mp4"
+              src="https://res.cloudinary.com/ddlod4evf/video/upload/f_mp4,q_auto:good,vc_h264,w_1920,h_1080,c_fill/home_vid_e6v05n.mp4"
               type="video/mp4"
             />
 
