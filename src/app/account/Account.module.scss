@@ -16,7 +16,7 @@
         padding: 0 $spacer-24;
         
         #{$namespace}__title {
-            font-family: 'Sk-Modernist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: var(--font-sk-modernist), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             font-size: $font-size-5xl;
             margin-bottom: 0;
         }

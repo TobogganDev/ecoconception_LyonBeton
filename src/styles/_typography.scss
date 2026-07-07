@@ -1,47 +1,11 @@
-// Sk-Modernist Font Definitions
-@font-face {
-  font-family: "Sk-Modernist";
-  src: url("https://db.onlinewebfonts.com/t/97386c1d7bdb684478ab36ec4e1129c8.eot");
-  src: url("https://db.onlinewebfonts.com/t/97386c1d7bdb684478ab36ec4e1129c8.eot?#iefix") format("embedded-opentype"),
-    url("https://db.onlinewebfonts.com/t/97386c1d7bdb684478ab36ec4e1129c8.woff2") format("woff2"),
-    url("https://db.onlinewebfonts.com/t/97386c1d7bdb684478ab36ec4e1129c8.woff") format("woff"),
-    url("https://db.onlinewebfonts.com/t/97386c1d7bdb684478ab36ec4e1129c8.ttf") format("truetype"),
-    url("https://db.onlinewebfonts.com/t/97386c1d7bdb684478ab36ec4e1129c8.svg#Sk-Modernist") format("svg");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Sk-Modernist Light";
-  src: url("https://db.onlinewebfonts.com/t/cd2adc492503743209c265f863fcee61.eot");
-  src: url("https://db.onlinewebfonts.com/t/cd2adc492503743209c265f863fcee61.eot?#iefix") format("embedded-opentype"),
-    url("https://db.onlinewebfonts.com/t/cd2adc492503743209c265f863fcee61.woff2") format("woff2"),
-    url("https://db.onlinewebfonts.com/t/cd2adc492503743209c265f863fcee61.woff") format("woff"),
-    url("https://db.onlinewebfonts.com/t/cd2adc492503743209c265f863fcee61.ttf") format("truetype"),
-    url("https://db.onlinewebfonts.com/t/cd2adc492503743209c265f863fcee61.svg#Sk-Modernist Light") format("svg");
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Sk-Modernist Bold";
-  src: url("https://db.onlinewebfonts.com/t/164f4d9975414d4ed6b78f88b36865eb.eot");
-  src: url("https://db.onlinewebfonts.com/t/164f4d9975414d4ed6b78f88b36865eb.eot?#iefix") format("embedded-opentype"),
-    url("https://db.onlinewebfonts.com/t/164f4d9975414d4ed6b78f88b36865eb.woff2") format("woff2"),
-    url("https://db.onlinewebfonts.com/t/164f4d9975414d4ed6b78f88b36865eb.woff") format("woff"),
-    url("https://db.onlinewebfonts.com/t/164f4d9975414d4ed6b78f88b36865eb.ttf") format("truetype"),
-    url("https://db.onlinewebfonts.com/t/164f4d9975414d4ed6b78f88b36865eb.svg#Sk-Modernist Bold") format("svg");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
+// Sk-Modernist is loaded via next/font/local in src/app/layout.tsx,
+// exposed as the --font-sk-modernist CSS variable on <body>.
+// All three weights (400/300/700) share that one variable; font-weight below selects the face.
 
 // Font Variables
-$font-primary: "Sk-Modernist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-$font-light: "Sk-Modernist Light", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-$font-bold: "Sk-Modernist Bold", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+$font-primary: var(--font-sk-modernist), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+$font-light: var(--font-sk-modernist), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+$font-bold: var(--font-sk-modernist), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
 // Typography Mixins
 @mixin font-primary {

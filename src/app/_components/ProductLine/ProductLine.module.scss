@@ -54,7 +54,7 @@
                 }
                 
                 #{$namespace}__subtitle {
-                    font-family: 'Sk-Modernist Light', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    font-family: var(--font-sk-modernist), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                     font-size: 0.9rem; 
                 }
             }

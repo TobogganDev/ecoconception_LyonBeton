@@ -1,5 +1,5 @@
 @use 'variables' as *;
-@use 'typography';
+@use 'typography' as *;
 
 body {
   background-color: $primary-color;
@@ -14,5 +14,5 @@ a {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-  font-family: 'Sk-Modernist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: $font-primary;
 }

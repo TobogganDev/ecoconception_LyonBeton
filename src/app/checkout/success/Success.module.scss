@@ -38,7 +38,7 @@
             font-size: 0.9rem;
             color: $secondary-color;
             margin-bottom: $spacer-4;
-            font-family: 'Sk-Modernist Light', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: var(--font-sk-modernist), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         #{$namespace}__actions {
@@ -79,7 +79,7 @@
         #{$namespace}__emailInfo {
             font-size: 0.9rem;
             color: $secondary-color;
-            font-family: 'Sk-Modernist Light', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: var(--font-sk-modernist), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
         }
     }

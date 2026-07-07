@@ -6,7 +6,7 @@
   padding: 0 $spacer-24;
 
   &__title {
-    font-family: 'Sk-Modernist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--font-sk-modernist), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: $font-size-2xl;
     margin-bottom: $spacer-4;
     font-weight: 500;
@@ -50,7 +50,7 @@
   }
 
   &__sectionTitle {
-    font-family: 'Sk-Modernist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--font-sk-modernist), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: $font-size-lg;
     margin-bottom: $spacer-4;
     color: $secondary-color;
@@ -66,7 +66,7 @@
   }
 
   &__shortcutLink {
-    font-family: 'Sk-Modernist Light', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--font-sk-modernist), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     color: $secondary-color;
     text-decoration: none;
     font-weight: 500;

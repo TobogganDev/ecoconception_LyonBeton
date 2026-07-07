@@ -68,7 +68,7 @@
 }
 
 .navItem {
-  font-family: 'Sk-Modernist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-sk-modernist), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: $secondary-color;
   text-decoration: none;
   font-size: 0.5rem;
@@ -98,7 +98,7 @@
 }
 
 .mainTitle {
-  font-family: 'Sk-Modernist Bold', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-sk-modernist), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: clamp(4rem, 15vw, 16rem);
   font-weight: 900;
   color: $secondary-color;
@@ -134,7 +134,7 @@
 }
 
 .category {
-  font-family: 'Sk-Modernist Light', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-sk-modernist), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   color: $secondary-color;
@@ -144,7 +144,7 @@
 }
 
 .collectionName {
-  font-family: 'Sk-Modernist Bold', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-sk-modernist), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 3rem;
   font-weight: 700;
   color: $secondary-color;
