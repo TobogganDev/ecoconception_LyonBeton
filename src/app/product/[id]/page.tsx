@@ -7,25 +7,23 @@ interface PageProps {
 }
 
 async function fetchProductById(id: string) {
-    return api.products.productByIdentifier({ identifier: id });
+  return api.products.productByIdentifier({ identifier: id });
 }
 
-export default async function ProductPage({
-    params,
-}: PageProps) {
-    const { id } = await params;
-    const productData = await fetchProductById(id);
+export default async function ProductPage({ params }: PageProps) {
+  const { id } = await params;
+  const productData = await fetchProductById(id);
 
-    if (!productData) {
-        return <h1>Produit introuvable</h1>;
-    }
+  if (!productData) {
+    return <h1>Produit introuvable</h1>;
+  }
 
-    const product = productData as ProductType;
+  const product = productData as ProductType;
 
-    return (
-        <div className="product-page">
-            <ProductSlider product={product} />
-            <ProductShop product={product} />
-        </div>
-    );
+  return (
+    <div className="product-page">
+      <ProductSlider product={product} />
+      <ProductShop product={product} />
+    </div>
+  );
 }

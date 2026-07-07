@@ -22,14 +22,14 @@ export async function GET() {
               quantity: 1,
               price: 79000,
               title: "Test Product",
-              subtitle: "Test Subtitle"
-            }
-          ]
-        }
+              subtitle: "Test Subtitle",
+            },
+          ],
+        },
       },
       include: {
-        items: true
-      }
+        items: true,
+      },
     });
 
     let duplicateOrder = null;
@@ -41,21 +41,23 @@ export async function GET() {
           status: "PAID",
           customerEmail: "test@idempotency.com",
           customerName: "Test User",
-        }
+        },
       });
     } catch (error) {
-      console.log("✅ Idempotency constraint working - duplicate order blocked");
+      console.log(
+        "✅ Idempotency constraint working - duplicate order blocked",
+      );
     }
 
     const ordersWithSessionId = await db.order.findMany({
-      where: { stripeSessionId: testSessionId }
+      where: { stripeSessionId: testSessionId },
     });
 
     await db.orderItem.deleteMany({
-      where: { orderId: testOrder.id }
+      where: { orderId: testOrder.id },
     });
     await db.order.delete({
-      where: { id: testOrder.id }
+      where: { id: testOrder.id },
     });
 
     const testResults = {
@@ -66,28 +68,28 @@ export async function GET() {
         idempotency: duplicateOrder
           ? "❌ Idempotency failed - duplicate order created"
           : "✅ Idempotency working - duplicate blocked",
-        uniqueConstraint: ordersWithSessionId.length === 1
-          ? "✅ Unique constraint working"
-          : `❌ Found ${ordersWithSessionId.length} orders with same session ID`,
-        cleanup: "✅ Test data cleaned up"
+        uniqueConstraint:
+          ordersWithSessionId.length === 1
+            ? "✅ Unique constraint working"
+            : `❌ Found ${ordersWithSessionId.length} orders with same session ID`,
+        cleanup: "✅ Test data cleaned up",
       },
       summary: {
         totalOrders: orderCount,
         testOrderId: testOrder.id,
-        testSessionId: testSessionId
-      }
+        testSessionId: testSessionId,
+      },
     };
 
     return NextResponse.json(testResults);
-
   } catch (error) {
     console.error("❌ Webhook test error:", error);
     return NextResponse.json(
       {
         error: "Test failed",
-        details: error instanceof Error ? error.message : "Unknown error"
+        details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -95,6 +97,6 @@ export async function GET() {
 export async function POST() {
   return NextResponse.json(
     { message: "Use GET to run webhook tests" },
-    { status: 405 }
+    { status: 405 },
   );
 }

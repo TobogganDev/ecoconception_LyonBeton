@@ -3,29 +3,34 @@ import { hash } from "bcryptjs";
 import crypto from "crypto";
 import { TRPCError } from "@trpc/server";
 
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
-  createTRPCRouter,
-  publicProcedure,
-} from "~/server/api/trpc";
-import { sendEmail, generateVerificationEmailTemplate, generatePasswordResetEmailTemplate } from "~/lib/email";
+  sendEmail,
+  generateVerificationEmailTemplate,
+  generatePasswordResetEmailTemplate,
+} from "~/lib/email";
 
 const registerSchema = z.object({
-  email: z.string().email('Email invalide'),
-  password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères'),
-  name: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
+  email: z.string().email("Email invalide"),
+  password: z
+    .string()
+    .min(8, "Le mot de passe doit contenir au moins 8 caractères"),
+  name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
 });
 
 const emailVerificationRequestSchema = z.object({
-  email: z.string().email('Email invalide'),
+  email: z.string().email("Email invalide"),
 });
 
 const passwordResetRequestSchema = z.object({
-  email: z.string().email('Email invalide'),
+  email: z.string().email("Email invalide"),
 });
 
 const passwordResetConfirmSchema = z.object({
-  token: z.string().min(1, 'Token requis'),
-  password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères'),
+  token: z.string().min(1, "Token requis"),
+  password: z
+    .string()
+    .min(8, "Le mot de passe doit contenir au moins 8 caractères"),
 });
 
 export const authRouter = createTRPCRouter({
@@ -55,7 +60,7 @@ export const authRouter = createTRPCRouter({
         },
       });
 
-      const token = crypto.randomBytes(32).toString('hex');
+      const token = crypto.randomBytes(32).toString("hex");
       const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
       await ctx.db.verificationToken.create({
@@ -67,26 +72,31 @@ export const authRouter = createTRPCRouter({
       });
 
       try {
-        const baseUrl = process.env.NEXTAUTH_URL ?? 'http://localhost:3000';
+        const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
         const verificationUrl = `${baseUrl}/api/auth/email/verification/verify?token=${token}`;
 
-        const { text, html } = generateVerificationEmailTemplate(verificationUrl, name);
+        const { text, html } = generateVerificationEmailTemplate(
+          verificationUrl,
+          name,
+        );
 
         await sendEmail({
           to: email,
-          subject: 'Vérifiez votre adresse email',
+          subject: "Vérifiez votre adresse email",
           text,
           html,
         });
 
         return {
-          message: 'Inscription réussie. Vérifiez votre email pour activer votre compte.',
+          message:
+            "Inscription réussie. Vérifiez votre email pour activer votre compte.",
         };
       } catch (emailError) {
-        console.error('Erreur envoi email inscription:', emailError);
+        console.error("Erreur envoi email inscription:", emailError);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Inscription réussie, mais l'email de vérification n'a pas pu être envoyé",
+          message:
+            "Inscription réussie, mais l'email de vérification n'a pas pu être envoyé",
         });
       }
     }),
@@ -118,7 +128,7 @@ export const authRouter = createTRPCRouter({
         where: { identifier: email },
       });
 
-      const token = crypto.randomBytes(32).toString('hex');
+      const token = crypto.randomBytes(32).toString("hex");
       const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
       await ctx.db.verificationToken.create({
@@ -129,20 +139,23 @@ export const authRouter = createTRPCRouter({
         },
       });
 
-      const baseUrl = process.env.NEXTAUTH_URL ?? 'http://localhost:3000';
+      const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
       const verificationUrl = `${baseUrl}/api/auth/email/verification/verify?token=${token}`;
 
-      const { text, html } = generateVerificationEmailTemplate(verificationUrl, user.name);
+      const { text, html } = generateVerificationEmailTemplate(
+        verificationUrl,
+        user.name,
+      );
 
       await sendEmail({
         to: email,
-        subject: 'Vérifiez votre adresse email',
+        subject: "Vérifiez votre adresse email",
         text,
         html,
       });
 
       return {
-        message: 'Email de vérification envoyé',
+        message: "Email de vérification envoyé",
       };
     }),
 
@@ -157,7 +170,8 @@ export const authRouter = createTRPCRouter({
 
       if (!user) {
         return {
-          message: 'Si cet email existe dans notre base de données, vous recevrez un email de réinitialisation',
+          message:
+            "Si cet email existe dans notre base de données, vous recevrez un email de réinitialisation",
         };
       }
 
@@ -165,7 +179,7 @@ export const authRouter = createTRPCRouter({
         where: { userId: user.id },
       });
 
-      const token = crypto.randomBytes(32).toString('hex');
+      const token = crypto.randomBytes(32).toString("hex");
       const expires = new Date(Date.now() + 60 * 60 * 1000);
 
       await ctx.db.passwordResetToken.create({
@@ -176,20 +190,24 @@ export const authRouter = createTRPCRouter({
         },
       });
 
-      const baseUrl = process.env.NEXTAUTH_URL ?? 'http://localhost:3000';
+      const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
       const resetUrl = `${baseUrl}/reset-password?token=${token}`;
 
-      const { text, html } = generatePasswordResetEmailTemplate(resetUrl, user.name);
+      const { text, html } = generatePasswordResetEmailTemplate(
+        resetUrl,
+        user.name,
+      );
 
       await sendEmail({
         to: email,
-        subject: 'Réinitialisation de votre mot de passe',
+        subject: "Réinitialisation de votre mot de passe",
         text,
         html,
       });
 
       return {
-        message: 'Si cet email existe dans notre base de données, vous recevrez un email de réinitialisation',
+        message:
+          "Si cet email existe dans notre base de données, vous recevrez un email de réinitialisation",
       };
     }),
 
@@ -222,7 +240,7 @@ export const authRouter = createTRPCRouter({
       });
 
       return {
-        message: 'Mot de passe réinitialisé avec succès',
+        message: "Mot de passe réinitialisé avec succès",
       };
     }),
 });

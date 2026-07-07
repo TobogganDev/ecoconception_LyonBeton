@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { signIn } from 'next-auth/react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { api } from '~/trpc/react';
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { api } from "~/trpc/react";
 
 const verifySchema = z.object({
-  code: z.string().min(6, 'Code requis').max(8, 'Code trop long'),
+  code: z.string().min(6, "Code requis").max(8, "Code trop long"),
 });
 
 type VerifyFormData = z.infer<typeof verifySchema>;
@@ -31,12 +31,12 @@ export default function Verify2FAPage() {
     resolver: zodResolver(verifySchema),
   });
 
-  const codeValue = watch('code');
+  const codeValue = watch("code");
 
   useEffect(() => {
-    const userIdParam = searchParams.get('userId');
+    const userIdParam = searchParams.get("userId");
     if (!userIdParam) {
-      void router.push('/login');
+      void router.push("/login");
       return;
     }
     setUserId(userIdParam);
@@ -46,20 +46,20 @@ export default function Verify2FAPage() {
     onSuccess: async (data) => {
       setIsLoading(true);
       try {
-        const result = await signIn('credentials', {
+        const result = await signIn("credentials", {
           userId: userId,
-          twoFactorVerified: 'true',
+          twoFactorVerified: "true",
           redirect: false,
         });
 
         if (result?.ok) {
-          const callbackUrl = searchParams.get('callbackUrl') ?? '/account';
+          const callbackUrl = searchParams.get("callbackUrl") ?? "/account";
           void router.push(callbackUrl);
         } else {
-          setError('Erreur de connexion après vérification 2FA');
+          setError("Erreur de connexion après vérification 2FA");
         }
       } catch {
-        setError('Erreur de connexion');
+        setError("Erreur de connexion");
       } finally {
         setIsLoading(false);
       }
@@ -95,13 +95,13 @@ export default function Verify2FAPage() {
 
         <div>
           <label htmlFor="code">
-            {showBackupCode ? 'Code de secours' : 'Code à 6 chiffres'}
+            {showBackupCode ? "Code de secours" : "Code à 6 chiffres"}
           </label>
           <input
-            {...register('code')}
+            {...register("code")}
             type="text"
             id="code"
-            placeholder={showBackupCode ? 'XXXX-XXXX' : '123456'}
+            placeholder={showBackupCode ? "XXXX-XXXX" : "123456"}
             maxLength={showBackupCode ? 9 : 6}
             autoComplete="one-time-code"
             autoFocus
@@ -110,7 +110,7 @@ export default function Verify2FAPage() {
         </div>
 
         <button type="submit" disabled={isLoading}>
-          {isLoading ? 'Vérification en cours...' : 'Vérifier'}
+          {isLoading ? "Vérification en cours..." : "Vérifier"}
         </button>
       </form>
 
@@ -119,7 +119,9 @@ export default function Verify2FAPage() {
           type="button"
           onClick={() => setShowBackupCode(!showBackupCode)}
         >
-          {showBackupCode ? 'Utiliser un code TOTP' : 'Utiliser un code de secours'}
+          {showBackupCode
+            ? "Utiliser un code TOTP"
+            : "Utiliser un code de secours"}
         </button>
       </div>
 

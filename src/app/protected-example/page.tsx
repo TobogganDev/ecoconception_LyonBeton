@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useRequireAuth } from '~/hooks/useRequireAuth';
+import { useRequireAuth } from "~/hooks/useRequireAuth";
 
 export default function ProtectedExamplePage() {
   const { session, isLoading, authenticated } = useRequireAuth();

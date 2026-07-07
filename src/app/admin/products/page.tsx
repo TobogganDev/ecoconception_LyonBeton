@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 import { api } from "~/trpc/react";
 
 export default function ProductManagement() {
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [formData, setFormData] = useState({
-    title: '',
-    subtitle: '',
-    description: '',
+    title: "",
+    subtitle: "",
+    description: "",
     price: 0,
-    ref: '',
-    identifier: '',
+    ref: "",
+    identifier: "",
     imgNumber: 1,
   });
   const [images, setImages] = useState<FileList | null>(null);
@@ -45,12 +45,12 @@ export default function ProductManagement() {
 
   const _resetForm = () => {
     setFormData({
-      title: '',
-      subtitle: '',
-      description: '',
+      title: "",
+      subtitle: "",
+      description: "",
       price: 0,
-      ref: '',
-      identifier: '',
+      ref: "",
+      identifier: "",
       imgNumber: 1,
     });
     setEditingProduct(null);
@@ -76,12 +76,12 @@ export default function ProductManagement() {
     setIsCreating(true);
     setEditingProduct(null);
     setFormData({
-      title: '',
-      subtitle: '',
-      description: '',
+      title: "",
+      subtitle: "",
+      description: "",
       price: 0,
-      ref: '',
-      identifier: '',
+      ref: "",
+      identifier: "",
       imgNumber: 1,
     });
     setImages(null);
@@ -92,13 +92,16 @@ export default function ProductManagement() {
 
     if (images && images.length > 0) {
       const fd = new FormData();
-      fd.set('identifier', formData.identifier);
+      fd.set("identifier", formData.identifier);
       if (editingProduct) {
-        fd.set('replace', 'true');
-        fd.set('previousImgNumber', String(editingProduct.imgNumber ?? 0));
+        fd.set("replace", "true");
+        fd.set("previousImgNumber", String(editingProduct.imgNumber ?? 0));
       }
-      Array.from(images).forEach((file) => fd.append('files', file));
-      const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
+      Array.from(images).forEach((file) => fd.append("files", file));
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: fd,
+      });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         alert(`Upload échoué: ${err.error ?? res.statusText}`);
@@ -123,7 +126,7 @@ export default function ProductManagement() {
   };
 
   const handleDeleteProduct = (id: number) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
+    if (confirm("Êtes-vous sûr de vouloir supprimer ce produit ?")) {
       deleteProductMutation.mutate({ id });
     }
   };
@@ -133,21 +136,21 @@ export default function ProductManagement() {
       <h1>Gestion des produits</h1>
 
       <div>
-        <button onClick={handleCreateProduct}>
-          Créer un nouveau produit
-        </button>
+        <button onClick={handleCreateProduct}>Créer un nouveau produit</button>
       </div>
 
       {(isCreating ?? editingProduct) && (
         <div>
-          <h2>{editingProduct ? 'Modifier le produit' : 'Créer un produit'}</h2>
+          <h2>{editingProduct ? "Modifier le produit" : "Créer un produit"}</h2>
           <form onSubmit={handleSubmit}>
             <div>
               <label>Titre:</label>
               <input
                 type="text"
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
                 required
               />
             </div>
@@ -157,7 +160,9 @@ export default function ProductManagement() {
               <input
                 type="text"
                 value={formData.subtitle}
-                onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, subtitle: e.target.value })
+                }
                 required
               />
             </div>
@@ -166,7 +171,9 @@ export default function ProductManagement() {
               <label>Description:</label>
               <textarea
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
                 required
               />
             </div>
@@ -176,7 +183,9 @@ export default function ProductManagement() {
               <input
                 type="number"
                 value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                onChange={(e) =>
+                  setFormData({ ...formData, price: Number(e.target.value) })
+                }
                 required
                 min="1"
               />
@@ -187,7 +196,9 @@ export default function ProductManagement() {
               <input
                 type="text"
                 value={formData.ref}
-                onChange={(e) => setFormData({ ...formData, ref: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, ref: e.target.value })
+                }
                 required
               />
             </div>
@@ -197,7 +208,9 @@ export default function ProductManagement() {
               <input
                 type="text"
                 value={formData.identifier}
-                onChange={(e) => setFormData({ ...formData, identifier: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, identifier: e.target.value })
+                }
                 required
               />
             </div>
@@ -212,21 +225,36 @@ export default function ProductManagement() {
               />
               {images && images.length > 0 && (
                 <p>
-                  {images.length} image{images.length > 1 ? 's' : ''} sélectionnée{images.length > 1 ? 's' : ''}
+                  {images.length} image{images.length > 1 ? "s" : ""}{" "}
+                  sélectionnée{images.length > 1 ? "s" : ""}
                 </p>
               )}
               {editingProduct && !images && (
                 <p>
-                  Images actuelles: {formData.imgNumber} image{formData.imgNumber > 1 ? 's' : ''}
+                  Images actuelles: {formData.imgNumber} image
+                  {formData.imgNumber > 1 ? "s" : ""}
                 </p>
               )}
             </div>
 
             <div>
-              <button type="submit" disabled={createProductMutation.isPending || updateProductMutation.isPending}>
-                {editingProduct ? 'Mettre à jour' : 'Créer'}
+              <button
+                type="submit"
+                disabled={
+                  createProductMutation.isPending ||
+                  updateProductMutation.isPending
+                }
+              >
+                {editingProduct ? "Mettre à jour" : "Créer"}
               </button>
-              <button type="button" onClick={() => { setIsCreating(false); setEditingProduct(null); setImages(null); }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsCreating(false);
+                  setEditingProduct(null);
+                  setImages(null);
+                }}
+              >
                 Annuler
               </button>
             </div>

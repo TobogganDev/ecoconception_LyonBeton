@@ -29,9 +29,9 @@ export async function sendEmail({ to, subject, text, html }: EmailOptions) {
       ignoreTLS: true,
       auth: process.env.EMAIL_SERVER_USER
         ? {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
-        }
+            user: process.env.EMAIL_SERVER_USER,
+            pass: process.env.EMAIL_SERVER_PASSWORD,
+          }
         : undefined,
     });
 

@@ -15,7 +15,14 @@ interface OrderCardProps {
   order: {
     id: string;
     total: number;
-    status: "PENDING" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "REFUNDED";
+    status:
+      | "PENDING"
+      | "PAID"
+      | "PROCESSING"
+      | "SHIPPED"
+      | "DELIVERED"
+      | "CANCELLED"
+      | "REFUNDED";
     customerEmail: string;
     customerName?: string | null;
     stripeSessionId: string;
@@ -26,7 +33,10 @@ interface OrderCardProps {
   showInvoiceLink?: boolean;
 }
 
-export default function OrderCard({ order, showInvoiceLink = true }: OrderCardProps) {
+export default function OrderCard({
+  order,
+  showInvoiceLink = true,
+}: OrderCardProps) {
   const formatPrice = (price: number) => {
     return (price / 100).toFixed(2);
   };
@@ -45,18 +55,18 @@ export default function OrderCard({ order, showInvoiceLink = true }: OrderCardPr
   };
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return new Intl.DateTimeFormat("fr-FR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     }).format(new Date(date));
   };
 
   const handleDownloadInvoice = () => {
     const invoiceUrl = `/api/invoices/${order.id}`;
-    window.open(invoiceUrl, '_blank');
+    window.open(invoiceUrl, "_blank");
   };
 
   return (
@@ -67,9 +77,7 @@ export default function OrderCard({ order, showInvoiceLink = true }: OrderCardPr
         <p>Statut: {getStatusText(order.status)}</p>
         <p>Total: {formatPrice(order.total)}€</p>
 
-        {order.customerName && (
-          <p>Client: {order.customerName}</p>
-        )}
+        {order.customerName && <p>Client: {order.customerName}</p>}
 
         <p>Email: {order.customerEmail}</p>
       </div>
@@ -91,14 +99,13 @@ export default function OrderCard({ order, showInvoiceLink = true }: OrderCardPr
       </div>
 
       <div>
-        {showInvoiceLink && order.status !== 'PENDING' && order.status !== 'CANCELLED' && (
-          <button
-            onClick={handleDownloadInvoice}
-            type="button"
-          >
-            Télécharger la facture
-          </button>
-        )}
+        {showInvoiceLink &&
+          order.status !== "PENDING" &&
+          order.status !== "CANCELLED" && (
+            <button onClick={handleDownloadInvoice} type="button">
+              Télécharger la facture
+            </button>
+          )}
 
         <div>
           <span>ID Stripe: {order.stripeSessionId}</span>

@@ -1,25 +1,37 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import styles from './Account.module.scss';
-import ProfileTab from './components/ProfileTab';
-import SecurityTab from './components/SecurityTab';
-import AdminTab from './components/AdminTab';
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import styles from "./Account.module.scss";
+import ProfileTab from "./components/ProfileTab";
+import SecurityTab from "./components/SecurityTab";
+import AdminTab from "./components/AdminTab";
 
 export default function AccountPage() {
   const { data: session } = useSession();
-  const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'admin'>('profile');
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [activeTab, setActiveTab] = useState<"profile" | "security" | "admin">(
+    "profile",
+  );
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleMessage = (newMessage: { type: 'success' | 'error'; text: string }) => {
+  const handleMessage = (newMessage: {
+    type: "success" | "error";
+    text: string;
+  }) => {
     setMessage(newMessage);
   };
 
   const positionTabContainer = () => {
-    const headerActionsElement = document.querySelector('.header__actions')! as HTMLElement;
-    const tabContainerElement = document.querySelector('.account__tabContainer')! as HTMLElement;
+    const headerActionsElement = document.querySelector(
+      ".header__actions",
+    )! as HTMLElement;
+    const tabContainerElement = document.querySelector(
+      ".account__tabContainer",
+    )! as HTMLElement;
 
     if (headerActionsElement && tabContainerElement) {
       let bottomLeftX = 0;
@@ -29,15 +41,20 @@ export default function AccountPage() {
 
       tabContainerRect.width = headerActionsRect.width;
 
-      bottomLeftX = headerActionsRect.left + headerActionsRect.width - tabContainerRect.width;
-      bottomLeftY = headerActionsRect.top + headerActionsRect.height - tabContainerRect.height;
+      bottomLeftX =
+        headerActionsRect.left +
+        headerActionsRect.width -
+        tabContainerRect.width;
+      bottomLeftY =
+        headerActionsRect.top +
+        headerActionsRect.height -
+        tabContainerRect.height;
 
-      tabContainerElement.style.position = 'absolute';
+      tabContainerElement.style.position = "absolute";
       tabContainerElement.style.left = `${bottomLeftX}px`;
       tabContainerElement.style.top = `${bottomLeftY}px`;
-    };
-  }
-
+    }
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -65,24 +82,17 @@ export default function AccountPage() {
       <div className={styles.account__header}>
         <h1 className={styles.account__title}>Mon Compte</h1>
 
-        <div className={`${styles.account__tabContainer} account__tabContainer`}>
-          <button
-            type="button"
-            onClick={() => setActiveTab('profile')}
-          >
+        <div
+          className={`${styles.account__tabContainer} account__tabContainer`}
+        >
+          <button type="button" onClick={() => setActiveTab("profile")}>
             Profil
           </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('security')}
-          >
+          <button type="button" onClick={() => setActiveTab("security")}>
             Sécurité
           </button>
-          {session?.user?.role === 'ADMIN' && (
-            <button
-              type="button"
-              onClick={() => setActiveTab('admin')}
-            >
+          {session?.user?.role === "ADMIN" && (
+            <button type="button" onClick={() => setActiveTab("admin")}>
               Administration
             </button>
           )}
@@ -90,12 +100,14 @@ export default function AccountPage() {
       </div>
 
       {message && (
-        <div className={`${styles.account__message} ${styles[`account__message--${message.type}`]}`}>
+        <div
+          className={`${styles.account__message} ${styles[`account__message--${message.type}`]}`}
+        >
           {message.text}
         </div>
       )}
 
-      {activeTab === 'profile' && (
+      {activeTab === "profile" && (
         <ProfileTab
           onMessage={handleMessage}
           isLoading={isLoading}
@@ -103,7 +115,7 @@ export default function AccountPage() {
         />
       )}
 
-      {activeTab === 'security' && (
+      {activeTab === "security" && (
         <SecurityTab
           onMessage={handleMessage}
           isLoading={isLoading}
@@ -111,9 +123,7 @@ export default function AccountPage() {
         />
       )}
 
-      {activeTab === 'admin' && session?.user?.role === 'ADMIN' && (
-        <AdminTab />
-      )}
+      {activeTab === "admin" && session?.user?.role === "ADMIN" && <AdminTab />}
     </div>
   );
 }

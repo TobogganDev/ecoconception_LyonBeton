@@ -3,7 +3,9 @@ import "~/styles/globals.css";
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 
-import SessionProvider, { CartMergeOnLogin } from "~/components/SessionProvider";
+import SessionProvider, {
+  CartMergeOnLogin,
+} from "~/components/SessionProvider";
 import { auth } from "~/lib/auth";
 import { TRPCReactProvider } from "~/trpc/react";
 import Header from "./_components/Header/Header";

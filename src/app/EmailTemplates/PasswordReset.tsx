@@ -1,12 +1,12 @@
 interface PasswordResetProps {
-	resetUrl: string;
-	userName: string;
+  resetUrl: string;
+  userName: string;
 }
 
 export default function PasswordReset(props: PasswordResetProps) {
-	const { resetUrl, userName } = props;
+  const { resetUrl, userName } = props;
 
-	const text = `
+  const text = `
 Bonjour ${userName},
 
 Vous avez demandé à réinitialiser votre mot de passe. Pour créer un nouveau mot de passe, cliquez sur le lien ci-dessous :
@@ -21,7 +21,7 @@ Cordialement,
 L'équipe
 	`;
 
-	const html = `
+  const html = `
 		<div style="font-family: Arial, Helvetica, sans-serif; background-color: #ebebeb; padding: 24px;">
 			<div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
 				<div style="background: #231f20; padding: 32px 20px; text-align: center;">
@@ -54,5 +54,5 @@ L'équipe
 		</div>
 	`;
 
-	return { text, html };
-} 
+  return { text, html };
+}

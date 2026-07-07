@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 import { api } from "~/trpc/react";
 
 export default function UserManagement() {
@@ -14,7 +14,10 @@ export default function UserManagement() {
     },
   });
 
-  const handlePromoteUser = (userId: string, newRole: 'USER' | 'ADMIN' | 'PREMIUM') => {
+  const handlePromoteUser = (
+    userId: string,
+    newRole: "USER" | "ADMIN" | "PREMIUM",
+  ) => {
     setPromotingUser(userId);
     promoteUserMutation.mutate({ userId, role: newRole });
   };
@@ -42,29 +45,31 @@ export default function UserManagement() {
                   <td>{user.name}</td>
                   <td>{user.email}</td>
                   <td>{user.role}</td>
-                  <td>{user.emailVerified ? 'Oui' : 'Non'}</td>
+                  <td>{user.emailVerified ? "Oui" : "Non"}</td>
                   <td>
                     {promotingUser === user.id ? (
                       <span>Mise à jour...</span>
                     ) : (
                       <div>
-                        {user.role !== 'USER' && (
+                        {user.role !== "USER" && (
                           <button
-                            onClick={() => handlePromoteUser(user.id, 'USER')}
+                            onClick={() => handlePromoteUser(user.id, "USER")}
                           >
                             → USER
                           </button>
                         )}
-                        {user.role !== 'PREMIUM' && (
+                        {user.role !== "PREMIUM" && (
                           <button
-                            onClick={() => handlePromoteUser(user.id, 'PREMIUM')}
+                            onClick={() =>
+                              handlePromoteUser(user.id, "PREMIUM")
+                            }
                           >
                             → PREMIUM
                           </button>
                         )}
-                        {user.role !== 'ADMIN' && (
+                        {user.role !== "ADMIN" && (
                           <button
-                            onClick={() => handlePromoteUser(user.id, 'ADMIN')}
+                            onClick={() => handlePromoteUser(user.id, "ADMIN")}
                           >
                             → ADMIN
                           </button>

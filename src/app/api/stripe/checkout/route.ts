@@ -7,10 +7,14 @@ import { z } from "zod";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 const checkoutSchema = z.object({
-  items: z.array(z.object({
-    productId: z.number(),
-    quantity: z.number().min(1),
-  })).min(1),
+  items: z
+    .array(
+      z.object({
+        productId: z.number(),
+        quantity: z.number().min(1),
+      }),
+    )
+    .min(1),
 });
 
 export async function POST(req: NextRequest) {
@@ -20,39 +24,40 @@ export async function POST(req: NextRequest) {
 
     const { items } = checkoutSchema.parse(body);
 
-    const productIds = items.map(item => item.productId);
+    const productIds = items.map((item) => item.productId);
     const products = await db.product.findMany({
       where: {
-        id: { in: productIds }
+        id: { in: productIds },
       },
       include: {
         prices: {
           where: {
             isActive: true,
-            isDefault: true
+            isDefault: true,
           },
-          take: 1
-        }
-      }
+          take: 1,
+        },
+      },
     });
 
     if (products.length !== productIds.length) {
       return NextResponse.json(
         { error: "Certains produits sont introuvables" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
 
     for (const item of items) {
-      const product = products.find(p => p.id === item.productId);
+      const product = products.find((p) => p.id === item.productId);
       if (!product) continue;
 
       const stripePrice = product.prices[0];
 
-      const isRealStripePrice = stripePrice?.stripePriceId?.startsWith('price_') &&
-        !stripePrice.stripePriceId.includes('_default');
+      const isRealStripePrice =
+        stripePrice?.stripePriceId?.startsWith("price_") &&
+        !stripePrice.stripePriceId.includes("_default");
 
       if (isRealStripePrice && stripePrice) {
         lineItems.push({
@@ -63,7 +68,7 @@ export async function POST(req: NextRequest) {
         const amount = stripePrice?.amount ?? product.price;
         lineItems.push({
           price_data: {
-            currency: 'eur',
+            currency: "eur",
             product_data: {
               name: product.title,
               description: product.subtitle,
@@ -76,8 +81,8 @@ export async function POST(req: NextRequest) {
     }
 
     const checkoutSession = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      mode: 'payment',
+      payment_method_types: ["card"],
+      mode: "payment",
       line_items: lineItems,
       success_url: `${req.nextUrl.origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.nextUrl.origin}/cart`,
@@ -89,23 +94,23 @@ export async function POST(req: NextRequest) {
 
     if (session?.user) {
       try {
-        const productIds = items.map(item => item.productId);
+        const productIds = items.map((item) => item.productId);
         const dbProducts = await db.product.findMany({
           where: { id: { in: productIds } },
           include: {
             prices: {
               where: { isActive: true, isDefault: true },
-              take: 1
-            }
-          }
+              take: 1,
+            },
+          },
         });
 
         if (dbProducts.length === productIds.length) {
           const total = items.reduce((sum, item) => {
-            const product = dbProducts.find(p => p.id === item.productId);
+            const product = dbProducts.find((p) => p.id === item.productId);
             if (!product) return sum;
             const price = product.prices[0]?.amount ?? product.price;
-            return sum + (price * item.quantity);
+            return sum + price * item.quantity;
           }, 0);
 
           const order = await db.$transaction(async (tx) => {
@@ -117,12 +122,14 @@ export async function POST(req: NextRequest) {
                 status: "PENDING",
                 customerEmail: session.user.email || "",
                 customerName: session.user.name || "Client",
-              }
+              },
             });
 
             await Promise.all(
               items.map(async (item) => {
-                const product = dbProducts.find(p => p.id === item.productId)!;
+                const product = dbProducts.find(
+                  (p) => p.id === item.productId,
+                )!;
                 const price = product.prices[0]?.amount ?? product.price;
 
                 return tx.orderItem.create({
@@ -133,21 +140,23 @@ export async function POST(req: NextRequest) {
                     price,
                     title: product.title,
                     subtitle: product.subtitle,
-                  }
+                  },
                 });
-              })
+              }),
             );
 
             return newOrder;
           });
 
-          console.log(`✅ PENDING order ${order.id} created for session: ${checkoutSession.id}`);
+          console.log(
+            `✅ PENDING order ${order.id} created for session: ${checkoutSession.id}`,
+          );
           console.log(`📋 Order details:`, {
             id: order.id,
             stripeSessionId: order.stripeSessionId,
             status: order.status,
             userId: order.userId,
-            total: order.total
+            total: order.total,
           });
         }
       } catch (error) {
@@ -156,20 +165,19 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ url: checkoutSession.url });
-
   } catch (error) {
-    console.error('Stripe checkout error:', error);
+    console.error("Stripe checkout error:", error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: "Données invalides", details: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     return NextResponse.json(
       { error: "Erreur lors de la création de la session de paiement" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

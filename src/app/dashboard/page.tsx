@@ -1,13 +1,13 @@
-import React from 'react';
-import { redirect } from 'next/navigation';
-import LogoutButton from '~/components/LogoutButton';
-import { auth } from '~/lib/auth';
+import React from "react";
+import { redirect } from "next/navigation";
+import LogoutButton from "~/components/LogoutButton";
+import { auth } from "~/lib/auth";
 
 export default async function DashboardPage() {
   const session = await auth();
 
   if (!session) {
-    redirect('/login');
+    redirect("/login");
   }
 
   return (
@@ -16,7 +16,7 @@ export default async function DashboardPage() {
       <p>Bienvenue, {session.user?.name} !</p>
       <p>Email: {session.user?.email}</p>
       <p>Rôle: {session.user?.role}</p>
-      <p>Email vérifié: {session.user.emailVerified ? 'Oui' : 'Non'}</p>
+      <p>Email vérifié: {session.user.emailVerified ? "Oui" : "Non"}</p>
 
       <LogoutButton>Se déconnecter</LogoutButton>
     </div>

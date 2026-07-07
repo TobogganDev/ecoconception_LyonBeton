@@ -1,8 +1,8 @@
-import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import type { ProductType } from '../../types/Products';
-import styles from './ProductLine.module.scss';
+import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import type { ProductType } from "../../types/Products";
+import styles from "./ProductLine.module.scss";
 
 interface ProductLineProps {
   product: ProductType;
@@ -19,9 +19,11 @@ export default function ProductLine({
   onQuantityChange,
   onRemove,
   showControls = true,
-  showImage = true
+  showImage = true,
 }: ProductLineProps) {
-  const currentPrice = product.prices?.find(p => p.isDefault && p.isActive)?.amount ?? product.price;
+  const currentPrice =
+    product.prices?.find((p) => p.isDefault && p.isActive)?.amount ??
+    product.price;
 
   const formatPrice = (price: number) => {
     return (price / 100).toFixed(2);
@@ -58,7 +60,7 @@ export default function ProductLine({
               sizes="20vw"
               className={styles.productLine__img}
               loading="lazy"
-              style={{ objectFit: 'contain' }}
+              style={{ objectFit: "contain" }}
             />
           ) : (
             <div>

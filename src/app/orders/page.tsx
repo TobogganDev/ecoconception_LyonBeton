@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { api } from '~/trpc/react';
-import OrderCard from '~/app/_components/OrderCard/OrderCard';
+import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { api } from "~/trpc/react";
+import OrderCard from "~/app/_components/OrderCard/OrderCard";
 
 export default function OrdersPage() {
   const { data: session } = useSession();
   const [page, setPage] = useState(1);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [status, setStatus] = useState<string>('');
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [status, setStatus] = useState<string>("");
 
-  const isAdmin = session?.user?.role === 'ADMIN';
+  const isAdmin = session?.user?.role === "ADMIN";
 
   const queryParams = {
     page,
@@ -22,8 +22,12 @@ export default function OrdersPage() {
     ...(status && { status: status as any }),
   };
 
-  const adminQuery = api.orders.getAllOrders.useQuery(queryParams, { enabled: isAdmin });
-  const userQuery = api.orders.getUserOrders.useQuery(queryParams, { enabled: !isAdmin });
+  const adminQuery = api.orders.getAllOrders.useQuery(queryParams, {
+    enabled: isAdmin,
+  });
+  const userQuery = api.orders.getUserOrders.useQuery(queryParams, {
+    enabled: !isAdmin,
+  });
 
   const { data, isLoading, error } = isAdmin ? adminQuery : userQuery;
 
@@ -40,16 +44,16 @@ export default function OrdersPage() {
   };
 
   const clearFilters = () => {
-    setStartDate('');
-    setEndDate('');
-    setStatus('');
+    setStartDate("");
+    setEndDate("");
+    setStatus("");
     setPage(1);
   };
 
   if (isLoading) {
     return (
       <div>
-        <h1>{isAdmin ? 'Toutes les Commandes' : 'Mes Commandes'}</h1>
+        <h1>{isAdmin ? "Toutes les Commandes" : "Mes Commandes"}</h1>
         <p>Chargement des commandes...</p>
       </div>
     );
@@ -58,7 +62,7 @@ export default function OrdersPage() {
   if (error) {
     return (
       <div>
-        <h1>{isAdmin ? 'Toutes les Commandes' : 'Mes Commandes'}</h1>
+        <h1>{isAdmin ? "Toutes les Commandes" : "Mes Commandes"}</h1>
         <p>Erreur lors du chargement des commandes: {error.message}</p>
       </div>
     );
@@ -66,7 +70,7 @@ export default function OrdersPage() {
 
   return (
     <div>
-      <h1>{isAdmin ? 'Toutes les Commandes' : 'Mes Commandes'}</h1>
+      <h1>{isAdmin ? "Toutes les Commandes" : "Mes Commandes"}</h1>
 
       <div>
         <h2>Filtres</h2>
@@ -119,7 +123,9 @@ export default function OrdersPage() {
         {data && data.orders.length > 0 ? (
           <div>
             <p>
-              Affichage de {(page - 1) * 10 + 1} à {Math.min(page * 10, data.totalCount)} sur {data.totalCount} commandes
+              Affichage de {(page - 1) * 10 + 1} à{" "}
+              {Math.min(page * 10, data.totalCount)} sur {data.totalCount}{" "}
+              commandes
             </p>
 
             <div>
@@ -158,7 +164,9 @@ export default function OrdersPage() {
           <div>
             <p>Aucune commande trouvée.</p>
             {(startDate ?? endDate ?? status) && (
-              <p>Essayez de modifier vos filtres pour voir plus de résultats.</p>
+              <p>
+                Essayez de modifier vos filtres pour voir plus de résultats.
+              </p>
             )}
           </div>
         )}

@@ -1,24 +1,24 @@
 interface PaymentFailedDetails {
-	id?: string;
-	total?: number;
-	customerEmail: string;
+  id?: string;
+  total?: number;
+  customerEmail: string;
 }
 
 interface PaymentFailedProps {
-	orderDetails: PaymentFailedDetails;
-	customerName: string;
+  orderDetails: PaymentFailedDetails;
+  customerName: string;
 }
 
 export default function PaymentFailed(props: PaymentFailedProps) {
-	const { orderDetails, customerName } = props;
+  const { orderDetails, customerName } = props;
 
-	const text = `
+  const text = `
 Bonjour ${customerName},
 
 Nous vous informons qu'un problème est survenu lors du traitement de votre paiement.
 
-${orderDetails.id ? `Commande concernée : #${orderDetails.id}` : ''}
-${orderDetails.total ? `Montant : ${(orderDetails.total / 100).toFixed(2)}€` : ''}
+${orderDetails.id ? `Commande concernée : #${orderDetails.id}` : ""}
+${orderDetails.total ? `Montant : ${(orderDetails.total / 100).toFixed(2)}€` : ""}
 
 Aucun montant n'a été débité de votre compte.
 
@@ -33,7 +33,7 @@ Cordialement,
 L'équipe Lyon Béton
 	`;
 
-	const html = `
+  const html = `
 		<div style="font-family: Arial, Helvetica, sans-serif; background-color: #ebebeb; padding: 24px;">
 			<div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
 				<div style="background: #231f20; padding: 32px 20px; text-align: center;">
@@ -44,12 +44,16 @@ L'équipe Lyon Béton
 					<p style="margin: 0 0 16px 0;">Bonjour <strong>${customerName}</strong>,</p>
 					<p style="margin: 0 0 16px 0;">Nous vous informons qu'un problème est survenu lors du traitement de votre paiement.</p>
 
-					${orderDetails.id ?? orderDetails.total ? `
+					${
+            (orderDetails.id ?? orderDetails.total)
+              ? `
 					<div style="background-color: #e3e3e3; border: 1px solid #e3e3e3; padding: 16px; margin: 20px 0;">
-						${orderDetails.id ? `<p style=\"margin: 0 0 6px 0;\">Commande concernée : <strong>#${orderDetails.id}</strong></p>` : ''}
-						${orderDetails.total ? `<p style=\"margin: 0;\">Montant : <strong>${(orderDetails.total / 100).toFixed(2)}€</strong></p>` : ''}
+						${orderDetails.id ? `<p style=\"margin: 0 0 6px 0;\">Commande concernée : <strong>#${orderDetails.id}</strong></p>` : ""}
+						${orderDetails.total ? `<p style=\"margin: 0;\">Montant : <strong>${(orderDetails.total / 100).toFixed(2)}€</strong></p>` : ""}
 					</div>
-					` : ''}
+					`
+              : ""
+          }
 
 					<p style="margin: 0 0 16px 0;"><strong>Aucun montant n'a été débité de votre compte.</strong></p>
 
@@ -72,5 +76,5 @@ L'équipe Lyon Béton
 		</div>
 	`;
 
-	return { text, html };
-} 
+  return { text, html };
+}

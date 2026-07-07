@@ -1,36 +1,32 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
-import {
-  createTRPCRouter,
-  adminProcedure,
-  createTRPCContext,
-} from "../trpc";
+import { createTRPCRouter, adminProcedure, createTRPCContext } from "../trpc";
 
 const promoteUserSchema = z.object({
-  userId: z.string().min(1, 'User ID requis'),
-  role: z.enum(['USER', 'ADMIN', 'PREMIUM']),
+  userId: z.string().min(1, "User ID requis"),
+  role: z.enum(["USER", "ADMIN", "PREMIUM"]),
 });
 
 const createProductSchema = z.object({
-  title: z.string().min(1, 'Titre requis'),
-  subtitle: z.string().min(1, 'Sous-titre requis'),
-  description: z.string().min(1, 'Description requise'),
-  price: z.number().positive('Prix doit être positif'),
-  ref: z.string().min(1, 'Référence requise'),
-  identifier: z.string().min(1, 'Identifiant requis'),
-  imgNumber: z.number().positive('Nombre d\'images requis'),
+  title: z.string().min(1, "Titre requis"),
+  subtitle: z.string().min(1, "Sous-titre requis"),
+  description: z.string().min(1, "Description requise"),
+  price: z.number().positive("Prix doit être positif"),
+  ref: z.string().min(1, "Référence requise"),
+  identifier: z.string().min(1, "Identifiant requis"),
+  imgNumber: z.number().positive("Nombre d'images requis"),
 });
 
 const updateProductSchema = z.object({
   id: z.number(),
-  title: z.string().min(1, 'Titre requis'),
-  subtitle: z.string().min(1, 'Sous-titre requis'),
-  description: z.string().min(1, 'Description requise'),
-  price: z.number().positive('Prix doit être positif'),
-  ref: z.string().min(1, 'Référence requise'),
-  identifier: z.string().min(1, 'Identifiant requis'),
-  imgNumber: z.number().positive('Nombre d\'images requis'),
+  title: z.string().min(1, "Titre requis"),
+  subtitle: z.string().min(1, "Sous-titre requis"),
+  description: z.string().min(1, "Description requise"),
+  price: z.number().positive("Prix doit être positif"),
+  ref: z.string().min(1, "Référence requise"),
+  identifier: z.string().min(1, "Identifiant requis"),
+  imgNumber: z.number().positive("Nombre d'images requis"),
 });
 
 async function logAuditAction(
@@ -38,7 +34,7 @@ async function logAuditAction(
   action: string,
   entity: string,
   entityId: string,
-  details?: Record<string, unknown>
+  details?: Record<string, unknown>,
 ) {
   if (!ctx.session?.user?.id) {
     throw new TRPCError({
@@ -53,25 +49,24 @@ async function logAuditAction(
       entity,
       entityId,
       adminId: ctx.session.user.id,
-      details: details ? JSON.parse(JSON.stringify(details)) as object : {},
+      details: details ? (JSON.parse(JSON.stringify(details)) as object) : {},
     },
   });
 }
 
 export const adminRouter = createTRPCRouter({
-  getAllUsers: adminProcedure
-    .query(async ({ ctx }) => {
-      return await ctx.db.user.findMany({
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-          emailVerified: true,
-        },
-        orderBy: { email: 'asc' },
-      });
-    }),
+  getAllUsers: adminProcedure.query(async ({ ctx }) => {
+    return await ctx.db.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        emailVerified: true,
+      },
+      orderBy: { email: "asc" },
+    });
+  }),
 
   promoteUser: adminProcedure
     .input(promoteUserSchema)
@@ -99,17 +94,11 @@ export const adminRouter = createTRPCRouter({
         },
       });
 
-      await logAuditAction(
-        ctx,
-        'ROLE_CHANGE',
-        'USER',
-        input.userId,
-        {
-          previousRole: user.role,
-          newRole: input.role,
-          userEmail: user.email,
-        }
-      );
+      await logAuditAction(ctx, "ROLE_CHANGE", "USER", input.userId, {
+        previousRole: user.role,
+        newRole: input.role,
+        userEmail: user.email,
+      });
 
       return {
         message: `Rôle mis à jour pour ${user.email}`,
@@ -117,29 +106,26 @@ export const adminRouter = createTRPCRouter({
       };
     }),
 
-  getAllProducts: adminProcedure
-    .query(async ({ ctx }) => {
-      return await ctx.db.product.findMany({
-        orderBy: { createdAt: 'desc' },
-      });
-    }),
+  getAllProducts: adminProcedure.query(async ({ ctx }) => {
+    return await ctx.db.product.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+  }),
 
   createProduct: adminProcedure
     .input(createProductSchema)
     .mutation(async ({ ctx, input }) => {
       const existingProduct = await ctx.db.product.findFirst({
         where: {
-          OR: [
-            { ref: input.ref },
-            { identifier: input.identifier },
-          ],
+          OR: [{ ref: input.ref }, { identifier: input.identifier }],
         },
       });
 
       if (existingProduct) {
         throw new TRPCError({
           code: "CONFLICT",
-          message: "Un produit avec cette référence ou cet identifiant existe déjà",
+          message:
+            "Un produit avec cette référence ou cet identifiant existe déjà",
         });
       }
 
@@ -147,19 +133,13 @@ export const adminRouter = createTRPCRouter({
         data: input,
       });
 
-      await logAuditAction(
-        ctx,
-        'CREATE',
-        'PRODUCT',
-        product.id.toString(),
-        {
-          productTitle: product.title,
-          productRef: product.ref,
-        }
-      );
+      await logAuditAction(ctx, "CREATE", "PRODUCT", product.id.toString(), {
+        productTitle: product.title,
+        productRef: product.ref,
+      });
 
       return {
-        message: 'Produit créé avec succès',
+        message: "Produit créé avec succès",
         product,
       };
     }),
@@ -191,20 +171,14 @@ export const adminRouter = createTRPCRouter({
         },
       });
 
-      await logAuditAction(
-        ctx,
-        'UPDATE',
-        'PRODUCT',
-        product.id.toString(),
-        {
-          productTitle: product.title,
-          productRef: product.ref,
-          changes: input,
-        }
-      );
+      await logAuditAction(ctx, "UPDATE", "PRODUCT", product.id.toString(), {
+        productTitle: product.title,
+        productRef: product.ref,
+        changes: input,
+      });
 
       return {
-        message: 'Produit mis à jour avec succès',
+        message: "Produit mis à jour avec succès",
         product,
       };
     }),
@@ -232,9 +206,12 @@ export const adminRouter = createTRPCRouter({
 
       // 2) Remove product images from Cloudinary (products/{identifier}_{index})
       try {
-        const publicIds = Array.from({ length: product.imgNumber }, (_, i) => `products/${product.identifier}_${i}`);
-        const { v2: cld } = await import('cloudinary');
-        await cld.api.delete_resources(publicIds, { resource_type: 'image' });
+        const publicIds = Array.from(
+          { length: product.imgNumber },
+          (_, i) => `products/${product.identifier}_${i}`,
+        );
+        const { v2: cld } = await import("cloudinary");
+        await cld.api.delete_resources(publicIds, { resource_type: "image" });
       } catch (_e) {
         // Continue even if Cloudinary deletion fails
       }
@@ -242,27 +219,23 @@ export const adminRouter = createTRPCRouter({
       // 3) Finally delete the product
       await ctx.db.product.delete({ where: { id: product.id } });
 
-      await logAuditAction(
-        ctx,
-        'DELETE',
-        'PRODUCT',
-        product.id.toString(),
-        {
-          productTitle: product.title,
-          productRef: product.ref,
-        }
-      );
+      await logAuditAction(ctx, "DELETE", "PRODUCT", product.id.toString(), {
+        productTitle: product.title,
+        productRef: product.ref,
+      });
 
       return {
-        message: 'Produit supprimé avec succès',
+        message: "Produit supprimé avec succès",
       };
     }),
 
   getAuditLogs: adminProcedure
-    .input(z.object({
-      limit: z.number().default(50),
-      offset: z.number().default(0),
-    }))
+    .input(
+      z.object({
+        limit: z.number().default(50),
+        offset: z.number().default(0),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       return await ctx.db.auditLog.findMany({
         include: {
@@ -273,7 +246,7 @@ export const adminRouter = createTRPCRouter({
             },
           },
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         take: input.limit,
         skip: input.offset,
       });

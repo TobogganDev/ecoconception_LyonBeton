@@ -1,14 +1,14 @@
 interface PaymentConfirmationProps {
-	orderId: string;
-	total: number;
-	customerName: string;
+  orderId: string;
+  total: number;
+  customerName: string;
 }
 
 export default function PaymentConfirmation(props: PaymentConfirmationProps) {
-	const { orderId, total, customerName } = props;
-	const totalInEuros = (total / 100).toFixed(2);
+  const { orderId, total, customerName } = props;
+  const totalInEuros = (total / 100).toFixed(2);
 
-	const text = `
+  const text = `
 Bonjour ${customerName},
 
 Nous confirmons la réception de votre paiement pour la commande #${orderId}.
@@ -21,7 +21,7 @@ Cordialement,
 L'équipe Lyon Béton
 	`;
 
-	const html = `
+  const html = `
 		<div style="font-family: Arial, Helvetica, sans-serif; background-color: #ebebeb; padding: 24px;">
 			<div style="max-width: 700px; margin: 0 auto; background-color: #ffffff;">
 				<div style="background: #231f20; padding: 32px 20px; text-align: center;">
@@ -50,5 +50,5 @@ L'équipe Lyon Béton
 		</div>
 	`;
 
-	return { text, html };
-} 
+  return { text, html };
+}

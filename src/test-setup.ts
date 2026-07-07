@@ -1,5 +1,5 @@
-import '@testing-library/jest-dom';
-import { vi, beforeEach } from 'vitest';
+import "@testing-library/jest-dom";
+import { vi, beforeEach } from "vitest";
 
 interface MockRouter {
   push: ReturnType<typeof vi.fn>;
@@ -20,9 +20,9 @@ declare global {
   var mockSession: MockSession;
 }
 
-process.env.NEXTAUTH_SECRET = 'test-secret';
-process.env.NEXTAUTH_URL = 'http://localhost:3000';
-process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test';
+process.env.NEXTAUTH_SECRET = "test-secret";
+process.env.NEXTAUTH_URL = "http://localhost:3000";
+process.env.DATABASE_URL = "postgresql://test:test@localhost:5432/test";
 
 const mockRouter = {
   push: vi.fn(),
@@ -33,21 +33,21 @@ const mockRouter = {
   prefetch: vi.fn(),
 };
 
-vi.mock('next/navigation', () => ({
+vi.mock("next/navigation", () => ({
   useRouter: () => mockRouter,
-  usePathname: () => '/',
+  usePathname: () => "/",
   useSearchParams: () => new URLSearchParams(),
 }));
 
 const mockSession = {
-  user: { id: '1', email: 'test@example.com', name: 'Test User', role: 'USER' },
-  expires: '2024-01-01',
+  user: { id: "1", email: "test@example.com", name: "Test User", role: "USER" },
+  expires: "2024-01-01",
 };
 
-vi.mock('next-auth/react', () => ({
+vi.mock("next-auth/react", () => ({
   useSession: vi.fn(() => ({
     data: mockSession,
-    status: 'authenticated',
+    status: "authenticated",
     update: vi.fn(),
   })),
   signIn: vi.fn(),
@@ -56,7 +56,6 @@ vi.mock('next-auth/react', () => ({
 }));
 
 beforeEach(() => {
-   
   vi.clearAllMocks();
 });
 

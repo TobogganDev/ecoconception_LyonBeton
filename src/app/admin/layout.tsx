@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function AdminLayout({
   children,
@@ -13,24 +13,24 @@ export default function AdminLayout({
   const router = useRouter();
 
   useEffect(() => {
-    if (status === 'loading') return;
+    if (status === "loading") return;
 
     if (!session) {
-      router.push('/login?from=/admin');
+      router.push("/login?from=/admin");
       return;
     }
 
-    if (session.user.role !== 'ADMIN') {
-      router.push('/');
+    if (session.user.role !== "ADMIN") {
+      router.push("/");
       return;
     }
   }, [session, status, router]);
 
-  if (status === 'loading') {
+  if (status === "loading") {
     return <div>Chargement...</div>;
   }
 
-  if (!session || session.user.role !== 'ADMIN') {
+  if (!session || session.user.role !== "ADMIN") {
     return <div>Redirection...</div>;
   }
 
@@ -38,7 +38,9 @@ export default function AdminLayout({
     <div>
       <div>
         <h1>Administration</h1>
-        <p>Connecté en tant que: {session.user.name} ({session.user.role})</p>
+        <p>
+          Connecté en tant que: {session.user.name} ({session.user.role})
+        </p>
         <nav>
           <a href="/admin">Dashboard</a>
           <a href="/admin/users">Gestion utilisateurs</a>
@@ -46,9 +48,7 @@ export default function AdminLayout({
           <a href="/">Retour au site</a>
         </nav>
       </div>
-      <div>
-        {children}
-      </div>
+      <div>{children}</div>
     </div>
   );
 }

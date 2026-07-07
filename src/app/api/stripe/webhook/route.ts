@@ -1,7 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { db } from "~/server/db";
-import { sendEmail, generateOrderConfirmationEmailTemplate, generatePaymentFailedEmailTemplate, generatePaymentConfirmationEmailTemplate } from "~/lib/email";
+import {
+  sendEmail,
+  generateOrderConfirmationEmailTemplate,
+  generatePaymentFailedEmailTemplate,
+  generatePaymentConfirmationEmailTemplate,
+} from "~/lib/email";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
@@ -17,10 +22,7 @@ export async function POST(req: NextRequest) {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (error) {
       console.error("❌ Webhook signature verification failed:", error);
-      return NextResponse.json(
-        { error: "Invalid signature" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
     }
 
     console.log(`🔔 Stripe webhook received: ${event.type}`);
@@ -47,17 +49,18 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ received: true });
-
   } catch (error) {
     console.error("❌ Webhook error:", error);
     return NextResponse.json(
       { error: "Webhook handler failed" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
+async function handleCheckoutSessionCompleted(
+  session: Stripe.Checkout.Session,
+) {
   try {
     const existingOrder = await db.order.findUnique({
       where: { stripeSessionId: session.id },
@@ -70,15 +73,17 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       },
     });
 
-
     if (existingOrder) {
       // Update existing PENDING order to PAID
       if (existingOrder.status === "PENDING") {
         // Get the payment intent ID - it could be a string or object
         let paymentIntentId = null;
-        if (typeof session.payment_intent === 'string') {
+        if (typeof session.payment_intent === "string") {
           paymentIntentId = session.payment_intent;
-        } else if (session.payment_intent && typeof session.payment_intent === 'object') {
+        } else if (
+          session.payment_intent &&
+          typeof session.payment_intent === "object"
+        ) {
           paymentIntentId = session.payment_intent.id;
         }
 
@@ -102,14 +107,14 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
             {
               id: updatedOrder.id,
               total: updatedOrder.total,
-              items: updatedOrder.items.map(item => ({
+              items: updatedOrder.items.map((item) => ({
                 title: item.title,
                 subtitle: item.subtitle,
                 quantity: item.quantity,
                 price: item.price,
-              }))
+              })),
             },
-            updatedOrder.customerName ?? "Client"
+            updatedOrder.customerName ?? "Client",
           );
 
           await sendEmail({
@@ -124,7 +129,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
             const paymentTemplate = generatePaymentConfirmationEmailTemplate(
               updatedOrder.id,
               updatedOrder.total,
-              updatedOrder.customerName ?? "Client"
+              updatedOrder.customerName ?? "Client",
             );
 
             await sendEmail({
@@ -134,22 +139,26 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
               html: paymentTemplate.html,
             });
           } catch (emailError) {
-            console.error("❌ Failed to send payment confirmation email:", emailError);
+            console.error(
+              "❌ Failed to send payment confirmation email:",
+              emailError,
+            );
           }
-
         } catch (emailError) {
           console.error("❌ Failed to send confirmation email:", emailError);
         }
 
         return;
       } else {
-        console.log(`⚠️ Order ${existingOrder.id} already processed (status: ${existingOrder.status}), skipping...`);
+        console.log(
+          `⚠️ Order ${existingOrder.id} already processed (status: ${existingOrder.status}), skipping...`,
+        );
         return;
       }
     }
 
     const lineItems = await stripe.checkout.sessions.listLineItems(session.id, {
-      expand: ['data.price.product']
+      expand: ["data.price.product"],
     });
 
     if (!lineItems.data.length) {
@@ -157,13 +166,15 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       return;
     }
 
-
     const total = session.amount_total ?? 0;
 
     let paymentIntentId = null;
-    if (typeof session.payment_intent === 'string') {
+    if (typeof session.payment_intent === "string") {
       paymentIntentId = session.payment_intent;
-    } else if (session.payment_intent && typeof session.payment_intent === 'object') {
+    } else if (
+      session.payment_intent &&
+      typeof session.payment_intent === "object"
+    ) {
       paymentIntentId = session.payment_intent.id;
     }
 
@@ -172,14 +183,15 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       ...(paymentIntentId && { stripePaymentId: paymentIntentId }),
       total,
       status: "PAID" as const,
-      customerEmail: session.customer_details?.email ?? session.customer_email ?? "",
+      customerEmail:
+        session.customer_details?.email ?? session.customer_email ?? "",
       customerName: session.customer_details?.name ?? "Client",
       userId: null,
     };
 
     const order = await db.$transaction(async (tx) => {
       const newOrder = await tx.order.create({
-        data: orderData
+        data: orderData,
       });
 
       const orderItems = [];
@@ -192,18 +204,20 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         let product = null;
         if (stripeProduct.id) {
           product = await tx.product.findFirst({
-            where: { stripeProductId: stripeProduct.id }
+            where: { stripeProductId: stripeProduct.id },
           });
         }
 
         if (!product && stripeProduct.metadata?.identifier) {
           product = await tx.product.findFirst({
-            where: { identifier: stripeProduct.metadata.identifier }
+            where: { identifier: stripeProduct.metadata.identifier },
           });
         }
 
         if (!product) {
-          console.warn(`⚠️ Product not found for Stripe product ${stripeProduct.id}, skipping item`);
+          console.warn(
+            `⚠️ Product not found for Stripe product ${stripeProduct.id}, skipping item`,
+          );
           continue;
         }
 
@@ -217,7 +231,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         };
 
         await tx.orderItem.create({
-          data: itemData
+          data: itemData,
         });
 
         orderItems.push({
@@ -230,15 +244,14 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       return { order: newOrder, items: orderItems };
     });
 
-
     try {
       const emailTemplate = generateOrderConfirmationEmailTemplate(
         {
           id: order.order.id,
           total: order.order.total,
-          items: order.items
+          items: order.items,
         },
-        order.order.customerName ?? "Client"
+        order.order.customerName ?? "Client",
       );
 
       await sendEmail({
@@ -253,7 +266,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         const paymentTemplate = generatePaymentConfirmationEmailTemplate(
           order.order.id,
           order.order.total,
-          order.order.customerName ?? "Client"
+          order.order.customerName ?? "Client",
         );
 
         await sendEmail({
@@ -263,13 +276,14 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
           html: paymentTemplate.html,
         });
       } catch (emailError) {
-        console.error("❌ Failed to send payment confirmation email:", emailError);
+        console.error(
+          "❌ Failed to send payment confirmation email:",
+          emailError,
+        );
       }
-
     } catch (emailError) {
       console.error("❌ Failed to send confirmation email:", emailError);
     }
-
   } catch (error) {
     console.error("❌ Error processing checkout session:", error);
     throw error;
@@ -283,21 +297,21 @@ async function handleChargeSucceeded(charge: Stripe.Charge) {
       return;
     }
 
-    const paymentIntentId = typeof charge.payment_intent === 'string'
-      ? charge.payment_intent
-      : charge.payment_intent.id;
-
-
+    const paymentIntentId =
+      typeof charge.payment_intent === "string"
+        ? charge.payment_intent
+        : charge.payment_intent.id;
 
     const existingOrder = await db.order.findFirst({
       where: {
         OR: [
           { stripePaymentId: paymentIntentId },
-          ...(charge.metadata?.session_id ? [{ stripeSessionId: charge.metadata.session_id }] : [])
-        ]
-      }
+          ...(charge.metadata?.session_id
+            ? [{ stripeSessionId: charge.metadata.session_id }]
+            : []),
+        ],
+      },
     });
-
 
     if (existingOrder && existingOrder.status === "PENDING") {
       const updated = await db.order.update({
@@ -305,16 +319,18 @@ async function handleChargeSucceeded(charge: Stripe.Charge) {
         data: {
           status: "PAID",
           stripePaymentId: paymentIntentId,
-        }
+        },
       });
 
-      console.log(`✅ Order ${existingOrder.id} updated to PAID via charge event`);
+      console.log(
+        `✅ Order ${existingOrder.id} updated to PAID via charge event`,
+      );
 
       try {
         const paymentTemplate = generatePaymentConfirmationEmailTemplate(
           updated.id,
           updated.total,
-          updated.customerName ?? "Client"
+          updated.customerName ?? "Client",
         );
 
         await sendEmail({
@@ -324,21 +340,28 @@ async function handleChargeSucceeded(charge: Stripe.Charge) {
           html: paymentTemplate.html,
         });
       } catch (emailError) {
-        console.error("❌ Failed to send payment confirmation email:", emailError);
+        console.error(
+          "❌ Failed to send payment confirmation email:",
+          emailError,
+        );
       }
-
     } else if (existingOrder) {
-      console.log(`⚠️ Order found via charge but status is ${existingOrder.status}, skipping`);
+      console.log(
+        `⚠️ Order found via charge but status is ${existingOrder.status}, skipping`,
+      );
     } else {
-      console.log(`⚠️ No order found for charge ${charge.id} with payment_intent ${paymentIntentId}`);
+      console.log(
+        `⚠️ No order found for charge ${charge.id} with payment_intent ${paymentIntentId}`,
+      );
     }
-
   } catch (error) {
     console.error("❌ Error processing charge succeeded:", error);
   }
 }
 
-async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
+async function handlePaymentIntentSucceeded(
+  paymentIntent: Stripe.PaymentIntent,
+) {
   try {
     console.log(`✅ Processing succeeded payment intent: ${paymentIntent.id}`);
 
@@ -346,20 +369,24 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
       where: {
         OR: [
           { stripePaymentId: paymentIntent.id },
-          ...(paymentIntent.metadata?.session_id ? [{ stripeSessionId: paymentIntent.metadata.session_id }] : [])
-        ]
-      }
+          ...(paymentIntent.metadata?.session_id
+            ? [{ stripeSessionId: paymentIntent.metadata.session_id }]
+            : []),
+        ],
+      },
     });
 
     if (existingOrder && existingOrder.status === "PENDING") {
-      console.log(`🔄 Updating order ${existingOrder.id} with payment ID ${paymentIntent.id}`);
+      console.log(
+        `🔄 Updating order ${existingOrder.id} with payment ID ${paymentIntent.id}`,
+      );
 
       const updated = await db.order.update({
         where: { id: existingOrder.id },
         data: {
           status: "PAID",
           stripePaymentId: paymentIntent.id,
-        }
+        },
       });
 
       console.log(`✅ Order ${existingOrder.id} updated to PAID status`);
@@ -368,7 +395,7 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
         const paymentTemplate = generatePaymentConfirmationEmailTemplate(
           updated.id,
           updated.total,
-          updated.customerName ?? "Client"
+          updated.customerName ?? "Client",
         );
 
         await sendEmail({
@@ -378,15 +405,18 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
           html: paymentTemplate.html,
         });
       } catch (emailError) {
-        console.error("❌ Failed to send payment confirmation email:", emailError);
+        console.error(
+          "❌ Failed to send payment confirmation email:",
+          emailError,
+        );
       }
-
     } else if (existingOrder) {
-      console.log(`⚠️ Order found but status is ${existingOrder.status}, skipping payment intent update`);
+      console.log(
+        `⚠️ Order found but status is ${existingOrder.status}, skipping payment intent update`,
+      );
     } else {
       console.log(`⚠️ No order found for payment intent ${paymentIntent.id}`);
     }
-
   } catch (error) {
     console.error("❌ Error processing payment intent succeeded:", error);
   }
@@ -396,13 +426,16 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
   try {
     console.log(`❌ Processing failed payment intent: ${paymentIntent.id}`);
 
-    const customerEmail = paymentIntent.receipt_email ??
-                         paymentIntent.shipping?.name ??
-                         "client@example.com";
+    const customerEmail =
+      paymentIntent.receipt_email ??
+      paymentIntent.shipping?.name ??
+      "client@example.com";
 
     const customerName = paymentIntent.shipping?.name ?? "Client";
 
-    console.error(`💳 Payment failed for ${customerEmail}: ${paymentIntent.last_payment_error?.message ?? 'Unknown error'}`);
+    console.error(
+      `💳 Payment failed for ${customerEmail}: ${paymentIntent.last_payment_error?.message ?? "Unknown error"}`,
+    );
 
     try {
       const emailTemplate = generatePaymentFailedEmailTemplate(
@@ -411,7 +444,7 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
           total: paymentIntent.amount,
           customerEmail,
         },
-        customerName
+        customerName,
       );
 
       await sendEmail({
@@ -425,7 +458,6 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
     } catch (emailError) {
       console.error("❌ Failed to send payment failed email:", emailError);
     }
-
   } catch (error) {
     console.error("❌ Error processing payment intent failed:", error);
   }

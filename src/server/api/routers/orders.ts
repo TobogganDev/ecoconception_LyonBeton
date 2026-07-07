@@ -13,16 +13,18 @@ export const ordersRouter = createTRPCRouter({
         limit: z.number().min(1).max(50).default(10),
         startDate: z.date().optional(),
         endDate: z.date().optional(),
-        status: z.enum([
-          "PENDING",
-          "PAID",
-          "PROCESSING",
-          "SHIPPED",
-          "DELIVERED",
-          "CANCELLED",
-          "REFUNDED"
-        ]).optional(),
-      })
+        status: z
+          .enum([
+            "PENDING",
+            "PAID",
+            "PROCESSING",
+            "SHIPPED",
+            "DELIVERED",
+            "CANCELLED",
+            "REFUNDED",
+          ])
+          .optional(),
+      }),
     )
     .query(async ({ ctx, input }) => {
       const { page, limit, startDate, endDate, status } = input;
@@ -30,12 +32,13 @@ export const ordersRouter = createTRPCRouter({
 
       const whereClause = {
         userId: ctx.session.user.id,
-        ...(startDate && endDate && {
-          createdAt: {
-            gte: startDate,
-            lte: endDate,
-          },
-        }),
+        ...(startDate &&
+          endDate && {
+            createdAt: {
+              gte: startDate,
+              lte: endDate,
+            },
+          }),
         ...(status && { status }),
       };
 
@@ -95,29 +98,32 @@ export const ordersRouter = createTRPCRouter({
         limit: z.number().min(1).max(50).default(20),
         startDate: z.date().optional(),
         endDate: z.date().optional(),
-        status: z.enum([
-          "PENDING",
-          "PAID",
-          "PROCESSING",
-          "SHIPPED",
-          "DELIVERED",
-          "CANCELLED",
-          "REFUNDED"
-        ]).optional(),
+        status: z
+          .enum([
+            "PENDING",
+            "PAID",
+            "PROCESSING",
+            "SHIPPED",
+            "DELIVERED",
+            "CANCELLED",
+            "REFUNDED",
+          ])
+          .optional(),
         customerEmail: z.string().optional(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const { page, limit, startDate, endDate, status, customerEmail } = input;
       const skip = (page - 1) * limit;
 
       const whereClause = {
-        ...(startDate && endDate && {
-          createdAt: {
-            gte: startDate,
-            lte: endDate,
-          },
-        }),
+        ...(startDate &&
+          endDate && {
+            createdAt: {
+              gte: startDate,
+              lte: endDate,
+            },
+          }),
         ...(status && { status }),
         ...(customerEmail && {
           customerEmail: {
@@ -170,9 +176,9 @@ export const ordersRouter = createTRPCRouter({
           "SHIPPED",
           "DELIVERED",
           "CANCELLED",
-          "REFUNDED"
+          "REFUNDED",
         ]),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const order = await ctx.db.order.update({
@@ -213,7 +219,9 @@ export const ordersRouter = createTRPCRouter({
     ] = await Promise.all([
       ctx.db.order.count(),
       ctx.db.order.aggregate({
-        where: { status: { in: ["PAID", "PROCESSING", "SHIPPED", "DELIVERED"] } },
+        where: {
+          status: { in: ["PAID", "PROCESSING", "SHIPPED", "DELIVERED"] },
+        },
         _sum: { total: true },
       }),
       ctx.db.order.count({ where: { status: "PENDING" } }),

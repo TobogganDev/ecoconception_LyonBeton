@@ -2,18 +2,17 @@ import { z } from "zod";
 import { compare, hash } from "bcryptjs";
 import { TRPCError } from "@trpc/server";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 const updateProfileSchema = z.object({
-  name: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
+  name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
 });
 
 const changePasswordSchema = z.object({
-  currentPassword: z.string().min(1, 'Mot de passe actuel requis'),
-  newPassword: z.string().min(8, 'Le nouveau mot de passe doit contenir au moins 8 caractères'),
+  currentPassword: z.string().min(1, "Mot de passe actuel requis"),
+  newPassword: z
+    .string()
+    .min(8, "Le nouveau mot de passe doit contenir au moins 8 caractères"),
 });
 
 export const accountRouter = createTRPCRouter({
@@ -35,7 +34,7 @@ export const accountRouter = createTRPCRouter({
       });
 
       return {
-        message: 'Profil mis à jour avec succès',
+        message: "Profil mis à jour avec succès",
         user: updatedUser,
       };
     }),
@@ -55,7 +54,10 @@ export const accountRouter = createTRPCRouter({
         });
       }
 
-      const isCurrentPasswordValid = await compare(input.currentPassword, user.passwordHash);
+      const isCurrentPasswordValid = await compare(
+        input.currentPassword,
+        user.passwordHash,
+      );
 
       if (!isCurrentPasswordValid) {
         throw new TRPCError({
@@ -72,30 +74,29 @@ export const accountRouter = createTRPCRouter({
       });
 
       return {
-        message: 'Mot de passe changé avec succès',
+        message: "Mot de passe changé avec succès",
       };
     }),
 
-  getProfile: protectedProcedure
-    .query(async ({ ctx }) => {
-      const user = await ctx.db.user.findUnique({
-        where: { id: ctx.session.user.id },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-          emailVerified: true,
-        },
+  getProfile: protectedProcedure.query(async ({ ctx }) => {
+    const user = await ctx.db.user.findUnique({
+      where: { id: ctx.session.user.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        emailVerified: true,
+      },
+    });
+
+    if (!user) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Utilisateur non trouvé",
       });
+    }
 
-      if (!user) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Utilisateur non trouvé",
-        });
-      }
-
-      return user;
-    }),
+    return user;
+  }),
 });

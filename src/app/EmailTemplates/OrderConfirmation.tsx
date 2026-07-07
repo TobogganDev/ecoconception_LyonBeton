@@ -1,33 +1,33 @@
 type OrderItem = {
-	title: string;
-	subtitle: string;
-	quantity: number;
-	price: number;
+  title: string;
+  subtitle: string;
+  quantity: number;
+  price: number;
 };
 
 interface OrderDetails {
-	id: string;
-	total: number;
-	items: Array<OrderItem>;
+  id: string;
+  total: number;
+  items: Array<OrderItem>;
 }
 
 interface OrderConfirmationProps {
-	orderDetails: OrderDetails;
-	customerName: string;
+  orderDetails: OrderDetails;
+  customerName: string;
 }
 
 export default function OrderConfirmation(props: OrderConfirmationProps) {
-	const { orderDetails, customerName } = props;
-	const totalInEuros = (orderDetails.total / 100).toFixed(2);
+  const { orderDetails, customerName } = props;
+  const totalInEuros = (orderDetails.total / 100).toFixed(2);
 
-	const text = `
+  const text = `
 Bonjour ${customerName},
 
 Merci pour votre commande ! Votre paiement a été confirmé.
 
 Détails de votre commande #${orderDetails.id} :
 
-${orderDetails.items.map(item => `- ${item.title} (${item.subtitle}) x${item.quantity} = ${(item.price * item.quantity / 100).toFixed(2)}€`).join('\n')}
+${orderDetails.items.map((item) => `- ${item.title} (${item.subtitle}) x${item.quantity} = ${((item.price * item.quantity) / 100).toFixed(2)}€`).join("\n")}
 
 Total : ${totalInEuros}€
 
@@ -37,7 +37,7 @@ Cordialement,
 L'équipe Lyon Béton
 	`;
 
-	const html = `
+  const html = `
 		<div style="font-family: Arial, Helvetica, sans-serif; background-color: #ebebeb; padding: 24px;">
 			<div style="max-width: 700px; margin: 0 auto; background-color: #ffffff;">
 				<div style="background: #231f20; padding: 32px 20px; text-align: center;">
@@ -60,16 +60,20 @@ L'équipe Lyon Béton
 								</tr>
 							</thead>
 							<tbody>
-								${orderDetails.items.map(item => `
+								${orderDetails.items
+                  .map(
+                    (item) => `
 									<tr style=\"border-bottom: 1px solid #e3e3e3;\">
 										<td style=\"padding: 10px;\">
 											<strong>${item.title}</strong><br>
 											<small style=\"color: #231f20;\">${item.subtitle}</small>
 										</td>
 										<td style=\"text-align: right; padding: 10px;\">${item.quantity}</td>
-										<td style=\"text-align: right; padding: 10px;\">${(item.price * item.quantity / 100).toFixed(2)}€</td>
+										<td style=\"text-align: right; padding: 10px;\">${((item.price * item.quantity) / 100).toFixed(2)}€</td>
 									</tr>
-								`).join('')}
+								`,
+                  )
+                  .join("")}
 							</tbody>
 							<tfoot>
 								<tr style="border-top: 2px solid #e3e3e3; font-weight: bold;">
@@ -92,5 +96,5 @@ L'équipe Lyon Béton
 		</div>
 	`;
 
-	return { text, html };
-} 
+  return { text, html };
+}

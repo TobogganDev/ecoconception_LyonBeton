@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { api } from "~/trpc/react";
 
@@ -26,8 +26,10 @@ export default function AdminDashboard() {
           <ul>
             {auditLogs.map((log) => (
               <li key={log.id}>
-                <strong>{log.admin.name}</strong> - {log.action} sur {log.entity}
-                (ID: {log.entityId}) - {new Date(log.createdAt).toLocaleString()}
+                <strong>{log.admin.name}</strong> - {log.action} sur{" "}
+                {log.entity}
+                (ID: {log.entityId}) -{" "}
+                {new Date(log.createdAt).toLocaleString()}
               </li>
             ))}
           </ul>
@@ -39,8 +41,12 @@ export default function AdminDashboard() {
       <div>
         <h2>Navigation</h2>
         <ul>
-          <li><a href="/admin/users">Gestion des utilisateurs</a></li>
-          <li><a href="/admin/products">Gestion des produits</a></li>
+          <li>
+            <a href="/admin/users">Gestion des utilisateurs</a>
+          </li>
+          <li>
+            <a href="/admin/products">Gestion des produits</a>
+          </li>
         </ul>
       </div>
     </div>

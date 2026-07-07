@@ -26,11 +26,21 @@ export async function sendVerificationRequest({
 
   const failed = result.rejected.filter(Boolean);
   if (failed.length) {
-    throw new Error(`Email(s) (${failed.map(String).join(", ")}) could not be sent`);
+    throw new Error(
+      `Email(s) (${failed.map(String).join(", ")}) could not be sent`,
+    );
   }
 }
 
-function html({ url, host, email }: { url: string; host: string; email: string }) {
+function html({
+  url,
+  host,
+  email,
+}: {
+  url: string;
+  host: string;
+  email: string;
+}) {
   const escapedEmail = `${email.replace(/\./g, "&#8203;.")}`;
   const escapedHost = `${host.replace(/\./g, "&#8203;.")}`;
   const brandColor = "#346df1";

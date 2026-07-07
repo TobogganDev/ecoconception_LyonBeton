@@ -1,16 +1,13 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '~/lib/prisma';
+import { NextResponse } from "next/server";
+import { prisma } from "~/lib/prisma";
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const token = searchParams.get('token');
+    const token = searchParams.get("token");
 
     if (!token) {
-      return NextResponse.json(
-        { error: 'Token manquant' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Token manquant" }, { status: 400 });
     }
 
     const verificationToken = await prisma.verificationToken.findUnique({
@@ -19,8 +16,8 @@ export async function GET(request: Request) {
 
     if (!verificationToken) {
       return NextResponse.json(
-        { error: 'Token invalide ou expiré' },
-        { status: 400 }
+        { error: "Token invalide ou expiré" },
+        { status: 400 },
       );
     }
 
@@ -29,10 +26,7 @@ export async function GET(request: Request) {
         where: { token },
       });
 
-      return NextResponse.json(
-        { error: 'Token expiré' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Token expiré" }, { status: 400 });
     }
 
     const user = await prisma.user.findUnique({
@@ -41,8 +35,8 @@ export async function GET(request: Request) {
 
     if (!user) {
       return NextResponse.json(
-        { error: 'Utilisateur introuvable' },
-        { status: 404 }
+        { error: "Utilisateur introuvable" },
+        { status: 404 },
       );
     }
 
@@ -55,12 +49,12 @@ export async function GET(request: Request) {
       where: { token },
     });
 
-    return NextResponse.redirect(new URL('/auth/email-verified', request.url));
+    return NextResponse.redirect(new URL("/auth/email-verified", request.url));
   } catch (error) {
-    console.error('Erreur lors de la vérification de l\'email:', error);
+    console.error("Erreur lors de la vérification de l'email:", error);
     return NextResponse.json(
-      { error: 'Erreur interne du serveur' },
-      { status: 500 }
+      { error: "Erreur interne du serveur" },
+      { status: 500 },
     );
   }
 }
