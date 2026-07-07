@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import type { ProductType } from "../../types/Products";
 import "./ProductSlider.css";
 
@@ -13,20 +14,26 @@ export default function ProductSlider({ product }: Props) {
 
     const { title, identifier, imgNumber } = product;
 
-    const images = Array.from({ length: imgNumber ?? 1 }).map((_, index) => (
-        <div
-            key={`${identifier}_${index}`}
-            className="carrousel__image"
-            style={{ backgroundImage: `url('https://res.cloudinary.com/ddlod4evf/image/upload/f_auto,q_auto/products/${identifier}_${index}.webp')` }}
-        />
-    ));
+    const renderImages = (copy: number) =>
+        Array.from({ length: imgNumber ?? 1 }).map((_, index) => (
+            <div key={`${identifier}_${copy}_${index}`} className="carrousel__image">
+                <Image
+                    src={`https://res.cloudinary.com/ddlod4evf/image/upload/f_auto,q_auto/products/${identifier}_${index}.webp`}
+                    alt={`${title} ${index + 1}`}
+                    fill
+                    sizes="33vw"
+                    className="carrousel__img"
+                    loading="lazy"
+                />
+            </div>
+        ));
 
     return (
         <div className="carrousel">
             <div className="carrousel__container" aria-label={title} ref={carrouselContainerRef}>
-                {images}
-                {images}
-                {imgNumber === 1 && images}
+                {renderImages(0)}
+                {renderImages(1)}
+                {imgNumber === 1 && renderImages(2)}
             </div>
         </div>
     );

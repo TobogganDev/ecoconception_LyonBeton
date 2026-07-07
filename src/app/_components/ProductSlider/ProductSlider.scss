@@ -14,11 +14,15 @@
     }
 
     &__image {
-        background: center / cover no-repeat;
+        position: relative;
         height: 100%;
         aspect-ratio: 4/3;
         border-right: 2px solid $secondary-color;
         border-bottom: 2px solid $secondary-color;
+    }
+
+    &__img {
+        object-fit: cover;
     }
 }
 
