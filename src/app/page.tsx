@@ -4,7 +4,6 @@ import '~/styles/globals.css';
 import { api, HydrateClient } from "~/trpc/server";
 import CardList from "./_components/CardList/CardList";
 import type { ProductType } from "./types/Products";
-import TestImage from "./_components/TestImage/CloudImage";
 
 async function fetchAllProducts() {
     return api.products.getLastProducts();
@@ -32,12 +31,6 @@ export default async function Home() {
             <Hero />
             <CardList
                 productList={productsList}
-            />
-            <TestImage
-                src="sample"
-                width={800}
-                height={600}
-                alt="Sample image"
             />
         </HydrateClient>
     );
