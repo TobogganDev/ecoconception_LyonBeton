@@ -3,10 +3,14 @@ import { faker } from "@faker-js/faker";
 import { LRUCache } from "lru-cache";
 
 // Route de benchmark : simule un traitement métier coûteux en CPU.
-// Un cache LRU en mémoire (TTL 60 s) évite de recalculer le résultat pour des
-// paramètres de requête identiques. Le header X-Cache indique HIT ou MISS.
-// Force l'exécution dynamique à chaque requête (pas de mise en cache Next.js) :
-// on veut que notre cache LRU soit la seule source de mise en cache.
+// Deux niveaux de cache se superposent :
+//  1. Cache CDN (Vercel Edge) piloté par le header Cache-Control de la réponse
+//     (public, s-maxage=3600, SWR=86400) => x-vercel-cache: HIT dès la 2ᵉ req.
+//  2. Cache applicatif LRU en mémoire (TTL 60 s) qui évite de recalculer le
+//     payload lorsque la fonction est réellement exécutée (Edge MISS/expiré).
+//     Le header X-Cache expose ce niveau (HIT/MISS).
+// `force-dynamic` empêche seulement la génération statique au build ; le cache
+// CDN reste piloté par le Cache-Control ci-dessus.
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
@@ -122,11 +126,15 @@ export async function GET(request: Request) {
 
   return NextResponse.json(payload, {
     headers: {
-      // HIT si le résultat provient du cache LRU, MISS s'il vient d'être calculé.
+      // Cache applicatif : HIT si le résultat provient du cache LRU en mémoire,
+      // MISS s'il vient d'être (re)calculé par ce worker.
       "X-Cache": cacheStatus,
-      // Interdit tout cache côté client, proxy ou CDN : le cache LRU serveur
-      // reste la seule source de mise en cache.
-      "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+      // Cache CDN (Vercel Edge Network) : la réponse est publique et sans
+      // données personnelles, on autorise donc l'Edge à la servir pendant 1 h
+      // (s-maxage) puis à la régénérer en tâche de fond pendant 24 h (SWR).
+      // Objectif : x-vercel-cache: HIT dès la 2ᵉ requête, sans réexécuter la
+      // fonction. Voir la stratégie centralisée dans next.config.js.
+      "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
     },
   });
 }

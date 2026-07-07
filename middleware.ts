@@ -31,7 +31,17 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+
+  // Garde-fou : toute réponse rattachée à une session est marquée
+  // `private, no-store`. Même si une route publique venait à être consultée en
+  // étant connecté, l'Edge Network ne mettra jamais en cache une réponse
+  // contenant potentiellement des données personnelles (PASS/MISS garanti).
+  if (session) {
+    response.headers.set("Cache-Control", "private, no-store");
+  }
+
+  return response;
 }
 
 export const config = {

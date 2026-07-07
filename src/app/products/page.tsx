@@ -1,9 +1,15 @@
-import { api } from "~/trpc/server";
+import { publicApi } from "~/trpc/public";
 import CardList from "~/app/_components/CardList/CardList";
 import type { ProductType } from "~/app/types/Products";
 
+// Rendu statique + ISR : la page est régénérée au plus toutes les heures.
+// Combiné au Cache-Control public (next.config.js) et au caller `publicApi`
+// (qui ne lit ni cookies ni headers), cela permet à Vercel Edge de renvoyer
+// x-vercel-cache: HIT sur cette route publique.
+export const revalidate = 3600;
+
 async function fetchAllProducts() {
-  return api.products.getAll();
+  return publicApi.products.getAll();
 }
 
 export default async function ProductsPage() {
