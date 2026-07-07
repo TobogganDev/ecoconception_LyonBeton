@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import type { ProductType } from '../../types/Products';
 import styles from './ProductLine.module.scss';
@@ -50,11 +51,14 @@ export default function ProductLine({
       {showImage && (
         <div className={styles.productLine__image}>
           {getImageUrl() ? (
-            <img
+            <Image
               src={getImageUrl()!}
               alt={product.title}
+              fill
+              sizes="20vw"
               className={styles.productLine__img}
               loading="lazy"
+              style={{ objectFit: 'contain' }}
             />
           ) : (
             <div>

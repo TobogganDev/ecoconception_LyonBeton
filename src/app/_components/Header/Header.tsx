@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -88,7 +89,14 @@ export default function Header() {
                     <span>Boutique</span>
                 </Link>
                 <Link href="/" className="header__logo">
-                    <img src={(logo as { src: string }).src} alt="Lyon Beton" />
+                    <Image
+                        src={logo}
+                        alt="Lyon Beton"
+                        width={140}
+                        height={70}
+                        loading="eager"
+                        unoptimized
+                    />
                 </Link>
                 <div className="header__actions">
                     {session ? (
@@ -127,10 +135,24 @@ export default function Header() {
                             className={bemCondition("header__actions-input", "visible", showInputSearch)}
                             placeholder="Rechercher..."
                         />
-                        <img src={(search as { src: string }).src} alt="Search" />
+                        <Image
+                            src={search}
+                            alt="Search"
+                            width={24}
+                            height={24}
+                            loading="eager"
+                            unoptimized
+                        />
                     </span>
                     <Link href="/cart" className="header__actions-icon cart">
-                        <img src={(cart as { src: string }).src} alt="Cart" />
+                        <Image
+                            src={cart}
+                            alt="Cart"
+                            width={24}
+                            height={24}
+                            loading="eager"
+                            unoptimized
+                        />
                     </Link>
                 </div>
             </div>

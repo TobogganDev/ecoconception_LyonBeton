@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
@@ -202,7 +203,16 @@ export default function TwoFactorPage() {
           <div>
             <h3>1. Scannez le QR Code</h3>
             <p>Utilisez Google Authenticator, Authy, ou une autre app TOTP :</p>
-            {qrCode && <img src={qrCode} alt="QR Code 2FA" loading="lazy" />}
+            {qrCode && (
+              <Image
+                src={qrCode}
+                alt="QR Code 2FA"
+                width={200}
+                height={200}
+                loading="lazy"
+                unoptimized
+              />
+            )}
           </div>
 
           <div>
