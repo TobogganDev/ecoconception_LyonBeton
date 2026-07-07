@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import { faker } from "@faker-js/faker";
+import { LRUCache } from "lru-cache";
 
 // Route de benchmark : simule un traitement métier coûteux en CPU.
-// AUCUN CACHE volontairement — on veut mesurer le pire cas pour un test de charge.
-// Force l'exécution dynamique à chaque requête (pas de mise en cache Next.js).
+// Un cache LRU en mémoire (TTL 60 s) évite de recalculer le résultat pour des
+// paramètres de requête identiques. Le header X-Cache indique HIT ou MISS.
+// Force l'exécution dynamique à chaque requête (pas de mise en cache Next.js) :
+// on veut que notre cache LRU soit la seule source de mise en cache.
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
@@ -32,7 +35,38 @@ interface Product {
   date: string;
 }
 
-export async function GET() {
+interface BenchmarkPayload {
+  meta: {
+    generated: number;
+    matched: number;
+    returned: number;
+    durationMs: number;
+  };
+  results: Product[];
+}
+
+// Cache LRU partagé entre les requêtes (persiste tant que le worker vit).
+// - clé : représentation stable des paramètres de la requête.
+// - valeur : payload JSON déjà calculé.
+// - ttl : 60 000 ms => une entrée expire au bout de 60 secondes.
+const CACHE_TTL_MS = 60_000;
+const benchmarkCache = new LRUCache<string, BenchmarkPayload>({
+  max: 100,
+  ttl: CACHE_TTL_MS,
+});
+
+// Construit une clé de cache stable à partir des paramètres de la requête.
+// Les paramètres sont triés afin que ?a=1&b=2 et ?b=2&a=1 partagent la même clé.
+function buildCacheKey(request: Request): string {
+  const url = new URL(request.url);
+  const sorted = [...url.searchParams.entries()].sort(([a], [b]) =>
+    a.localeCompare(b),
+  );
+  return new URLSearchParams(sorted).toString() || "__default__";
+}
+
+// Effectue le traitement coûteux (génération + filtres + tri).
+function computeBenchmark(): BenchmarkPayload {
   const startedAt = Date.now();
 
   // 1. Génération de 50 000 produits avec faker.
@@ -64,23 +98,35 @@ export async function GET() {
   // 4. On ne retourne que les 100 premiers résultats.
   const results = filtered.slice(0, 100);
 
-  const durationMs = Date.now() - startedAt;
+  return {
+    meta: {
+      generated: products.length,
+      matched: filtered.length,
+      returned: results.length,
+      durationMs: Date.now() - startedAt,
+    },
+    results,
+  };
+}
 
-  return NextResponse.json(
-    {
-      meta: {
-        generated: products.length,
-        matched: filtered.length,
-        returned: results.length,
-        durationMs,
-      },
-      results,
+export async function GET(request: Request) {
+  const cacheKey = buildCacheKey(request);
+
+  let payload = benchmarkCache.get(cacheKey);
+  const cacheStatus = payload ? "HIT" : "MISS";
+
+  if (!payload) {
+    payload = computeBenchmark();
+    benchmarkCache.set(cacheKey, payload);
+  }
+
+  return NextResponse.json(payload, {
+    headers: {
+      // HIT si le résultat provient du cache LRU, MISS s'il vient d'être calculé.
+      "X-Cache": cacheStatus,
+      // Interdit tout cache côté client, proxy ou CDN : le cache LRU serveur
+      // reste la seule source de mise en cache.
+      "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
     },
-    {
-      // Interdit tout cache côté client, proxy ou CDN.
-      headers: {
-        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
-      },
-    },
-  );
+  });
 }

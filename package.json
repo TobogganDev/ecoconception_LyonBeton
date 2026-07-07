@@ -43,6 +43,7 @@
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.7.0",
     "js-yaml": "^4.1.0",
+    "lru-cache": "^11.5.1",
     "next": "^15.2.3",
     "next-auth": "5.0.0-beta.25",
     "nodemailer": "^6.10.1",
