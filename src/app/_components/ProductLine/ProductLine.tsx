@@ -54,6 +54,7 @@ export default function ProductLine({
               src={getImageUrl()!}
               alt={product.title}
               className={styles.productLine__img}
+              loading="lazy"
             />
           ) : (
             <div>

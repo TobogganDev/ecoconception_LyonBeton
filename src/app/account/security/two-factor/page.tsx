@@ -202,7 +202,7 @@ export default function TwoFactorPage() {
           <div>
             <h3>1. Scannez le QR Code</h3>
             <p>Utilisez Google Authenticator, Authy, ou une autre app TOTP :</p>
-            {qrCode && <img src={qrCode} alt="QR Code 2FA" />}
+            {qrCode && <img src={qrCode} alt="QR Code 2FA" loading="lazy" />}
           </div>
 
           <div>
