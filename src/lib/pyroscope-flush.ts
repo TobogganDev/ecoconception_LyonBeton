@@ -38,6 +38,7 @@ async function flushOnce() {
     const Pyroscope = (await import("@pyroscope/nodejs")).default;
     await Pyroscope.stop();
     Pyroscope.start();
+    console.info("[pyroscope] Flushed profile after request.");
   } catch (err) {
     console.error("[pyroscope] Failed to flush profile:", err);
   }
