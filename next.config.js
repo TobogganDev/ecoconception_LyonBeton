@@ -23,6 +23,11 @@ const PRIVATE_CACHE_CONTROL = "private, no-store";
 
 /** @type {import("next").NextConfig} */
 const config = {
+  // `@pyroscope/nodejs` (via `@datadog/pprof`) ships a native `.node` addon.
+  // Webpack-bundling it breaks the addon's relative path lookup at runtime —
+  // keep it as a plain `require` so the native binary resolves correctly.
+  serverExternalPackages: ["@pyroscope/nodejs", "@datadog/pprof"],
+
   images: {
     remotePatterns: [
       {
