@@ -28,16 +28,18 @@ export async function register() {
   const Pyroscope = (await import("@pyroscope/nodejs")).default;
 
   Pyroscope.init({
-    serverAddress, // ← your Grafana Cloud Pyroscope URL
-    // Grafana Cloud's legacy Basic Auth (numeric instance ID + token) push
-    // path fails with "authentication error: legacy auth cannot be upgraded
-    // because the host is not found" on this stack — use Bearer auth instead.
+    serverAddress,
+    // v1.x API: tenantID + authToken instead of basicAuthUser + basicAuthPassword
+    tenantID: process.env.PYROSCOPE_BASIC_AUTH_USER,
     authToken: process.env.PYROSCOPE_AUTH_TOKEN,
     appName: process.env.PYROSCOPE_APPLICATION_NAME ?? "lyon-beton-backend",
     tags: { env: process.env.NODE_ENV ?? "development" },
   });
 
-  console.info("[pyroscope] token set:", !!process.env.PYROSCOPE_AUTH_TOKEN);
+  console.info(
+    "[pyroscope] tenantID set:", !!process.env.PYROSCOPE_BASIC_AUTH_USER,
+    "token set:", !!process.env.PYROSCOPE_AUTH_TOKEN,
+  );
 
   try {
     Pyroscope.start();
