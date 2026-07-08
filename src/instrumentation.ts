@@ -37,6 +37,17 @@ export async function register() {
     tags: { env: process.env.NODE_ENV ?? "development" },
   });
 
-  Pyroscope.start();
-  console.info("[pyroscope] Continuous profiling started.");
+  console.info(
+    "[pyroscope] user:",
+    process.env.PYROSCOPE_BASIC_AUTH_USER,
+    "token set:",
+    !!process.env.PYROSCOPE_AUTH_TOKEN,
+  );
+
+  try {
+    Pyroscope.start();
+    console.info("[pyroscope] Continuous profiling started.");
+  } catch (err) {
+    console.error("[pyroscope] Failed to start profiling:", err);
+  }
 }
