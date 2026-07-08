@@ -7,7 +7,8 @@
       "Bash(Remove-Item .next -Recurse -Force)",
       "Bash(npx tsc:*)",
       "Bash(timeout 30 npm run build)",
-      "Bash(xargs -I{} sh -c 'echo === {} ===; cat {}')"
+      "Bash(xargs -I{} sh -c 'echo === {} ===; cat {}')",
+      "mcp__grafana__list_prometheus_metric_names"
     ],
     "deny": [],
     "ask": []

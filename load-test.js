@@ -40,6 +40,15 @@ const cacheHits = new Counter("phase_cache_hits");
 const cacheMisses = new Counter("phase_cache_misses");
 
 export const options = {
+  // Sends results to Grafana Cloud k6 when run with `k6 run -o cloud`.
+  // Requires K6_CLOUD_TOKEN (from `k6 cloud login` or the Grafana Cloud
+  // portal) and the k6 Cloud app enabled on the Grafana Cloud stack.
+  cloud: {
+    name: "lyon-beton-benchmark",
+    ...(__ENV.K6_CLOUD_PROJECT_ID
+      ? { projectID: Number(__ENV.K6_CLOUD_PROJECT_ID) }
+      : {}),
+  },
   scenarios: {
     // Phase 1 : cache froid -> majorité de MISS.
     avant_cache: {

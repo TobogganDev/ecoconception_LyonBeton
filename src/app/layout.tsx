@@ -8,6 +8,7 @@ import SessionProvider, {
   CartMergeOnLogin,
 } from "~/components/SessionProvider";
 import { auth } from "~/lib/auth";
+import { schedulePyroscopeFlush } from "~/lib/pyroscope-flush";
 import { TRPCReactProvider } from "~/trpc/react";
 import Header from "./_components/Header/Header";
 
@@ -38,6 +39,7 @@ export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const session = await auth();
+  schedulePyroscopeFlush();
 
   return (
     <html lang="fr">

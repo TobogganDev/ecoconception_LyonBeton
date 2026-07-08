@@ -17,6 +17,8 @@
     "postinstall": "prisma generate",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
+    "loadtest": "k6 run load-test.js",
+    "loadtest:cloud": "k6 run -o cloud load-test.js",
     "preview": "next build && next start",
     "sass:watch": "sass --watch src:src --style=compressed --no-source-map",
     "start": "next start",
