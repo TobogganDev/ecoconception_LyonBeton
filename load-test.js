@@ -22,7 +22,10 @@ import { Trend, Rate, Counter } from "k6/metrics";
 //   (BASE_URL par défaut : http://localhost:3000)
 // -----------------------------------------------------------------------------
 
-const BASE_URL = __ENV.BASE_URL || "http://localhost:3000";
+const BASE_URL = (__ENV.BASE_URL || "http://localhost:3000").replace(
+  /\/+$/,
+  "",
+);
 const TARGET = `${BASE_URL}/api/benchmark`;
 
 // Profil de charge commun aux deux phases : rampe montante jusqu'à 50 VUs,
