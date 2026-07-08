@@ -24,11 +24,7 @@ const CATEGORIES = [
 ] as const;
 
 // Sous-ensemble de catégories retenues par le filtre métier.
-const ALLOWED_CATEGORIES = new Set<string>([
-  "mobilier",
-  "luminaire",
-  "beton",
-]);
+const ALLOWED_CATEGORIES = new Set<string>(["mobilier", "luminaire", "beton"]);
 
 interface Product {
   id: string;
